@@ -10,7 +10,7 @@ COPY src ./src
 RUN mvn clean install -DskipTests
 
 # Stage 2: Create the final, lightweight image
-FROM openjdk:21-jre-slim
+FROM openjdk:21-slim
 # This is a much smaller image for running the app
 
 WORKDIR /app
