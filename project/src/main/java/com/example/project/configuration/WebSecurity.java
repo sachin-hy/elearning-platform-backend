@@ -79,7 +79,7 @@ public class WebSecurity {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("https://elearning-platform-frontend-rho.vercel.app")); ///https://elearning-platform-frontend-rho.vercel.app
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); ///https://elearning-platform-frontend-rho.vercel.app
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         config.setAllowCredentials(true);
         config.setAllowedHeaders(Arrays.asList("*"));

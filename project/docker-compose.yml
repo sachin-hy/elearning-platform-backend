@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  springboot:
+    build: .
+    container_name: project_backend
+    ports:
+      - "8080:8080" 
+    environment:
+      - JDBC_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SPRING_MAIL_HOST=${MAIL_HOST}
+      - SPRING_MAIL_PORT=${MAIL_PORT}
+      - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD}
+      - CLOUDINARY_CLOUD_NAME=${CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUD_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUD_API_SECRET}
+      - RAZORPAY_KEY_ID=${KEY_ID}
+      - RAZORPAY_KEY_SECRET=${KEY_SECRET}
+      - JWT_SECRET_KEY=${SECRET_KEY}
+    
+    
