@@ -58,7 +58,7 @@ public class ChatRoomService {
 		ChatRoom chatRoom = chatRepo.findById(roomId).get();
 		 
 		List<Message> message = messageRepo.findMessageByChatRoom(chatRoom);
-		log.info("Found {} messages for chat room ID: {}", messages.size(), roomId);
+		log.info("Found {} messages for chat room ID: {}", roomId);
 		
 		return message.stream().map(msg -> {
 			HashMap<String,Object> m = new HashMap<>();
@@ -111,7 +111,7 @@ public class ChatRoomService {
 		m.addUser(user);
 		m.addChatRoom(chatRoom);
 		Message msg = messageRepo.save(m);
-		log.info("Message saved successfully with ID: {}", savedMessage.getId());
+		log.info("Message saved successfully with ID: {}");
 		
 		HashMap<String,Object> messageResponse = new HashMap<>();
 		messageResponse.put("userId", msg.getUser().getUserid());
