@@ -15,9 +15,11 @@ import com.example.project.dto.Signupdto;
 import com.example.project.service.SignUpService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class SignupController {
 
 	
@@ -28,10 +30,13 @@ public class SignupController {
 	    public SignupController(SignUpService signUpService) {
 	        this.signUpService = signUpService;
 	    }
+	    
+	    
 	
 	@PostMapping("/sendotp")
 	public ResponseEntity<String> sendMail(@RequestParam("email") String email)
 	{
+		log.info("send otp request recived for user : {}",email);
 		
 		 signUpService.sendOtp(email);
 		
@@ -47,7 +52,7 @@ public class SignupController {
 		
 			
 			//entry create in db
-			
+			log.info("signup request recieved for user ;{}",signupdto.email());
 			signUpService.saveUser(signupdto);
 			
 			

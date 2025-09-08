@@ -21,10 +21,12 @@ import com.example.project.entity.Category;
 import com.example.project.service.CategoryService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 
 @RestController
 @RequestMapping("/categories")
+@Slf4j
 public class CategoryController {
 
 	

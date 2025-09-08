@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.project.service.ChatRoomService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
+@Slf4j
 public class ChatRoomController {
 
 	private final ChatRoomService chatRoomService;
@@ -34,6 +37,7 @@ public class ChatRoomController {
 		
 			String email = principal.getName();
 			
+			log.info("Get Chatroom history request recived for user : {}",email);
 			List<Map<String,Object>> list = chatRoomService.ChatRooms(email);
 	
 			return new ResponseEntity<>(list,HttpStatus.OK);
@@ -48,7 +52,7 @@ public class ChatRoomController {
 	{
 	
 		   
-		
+		    log.info("get chat history request recived for roomid : {} ", rId);
 		   List<Map<String,Object>>  message = chatRoomService.getMessage(rId);
 		
 		   return new ResponseEntity<>(message,HttpStatus.OK);

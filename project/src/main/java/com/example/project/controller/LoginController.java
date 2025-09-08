@@ -15,9 +15,11 @@ import com.example.project.service.UsersService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class LoginController {
   
 	
@@ -27,10 +29,12 @@ public class LoginController {
 	        this.usersService = usersService;
 	 }
 	
+	 
+	 
 	@PostMapping("/login")
 	public ResponseEntity<?> login( @Valid @RequestBody LoginDto logindto,HttpServletRequest request)
 	{
-		
+		log.info("Login request received for user: {}",logindto.email());
 		LoginResponseDto res = usersService.checkCredentials(logindto,request);
 
 			

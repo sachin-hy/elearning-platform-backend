@@ -41,6 +41,7 @@ public class CapturePaymentController {
        
             String email = principal.getName();
             
+            log.info("Create Order Request recived by user:  {}",email);
             OrderResponse response =  paymentService.createOrder(cid, email);
             return ResponseEntity.ok(response);
 
@@ -51,7 +52,7 @@ public class CapturePaymentController {
     @PostMapping("/verify-payment")
     public ResponseEntity<PaymentVerificationResponse> verifyPayment(@Valid @RequestBody PaymentVerificationRequest request, Principal principal) {
       
-    	
+    	log.info("Payment verification request recived by user : {} ",principal.getName());
     	PaymentVerificationResponse payment = paymentService.verifyPayment(request);
     	
     	return new ResponseEntity<>(payment,HttpStatus.OK);

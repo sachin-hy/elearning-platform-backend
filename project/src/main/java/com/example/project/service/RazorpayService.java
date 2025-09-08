@@ -11,7 +11,11 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.Utils;
 
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class RazorpayService {
 
 	    @Value("${razorpay.key_id}")
@@ -26,9 +30,11 @@ public class RazorpayService {
 	    }
 	
 	    
-	    
+	@Transactional    
 	public Order createRazorpayOrder(Long courseid,int coursePrice, String email) throws Exception {
 	    // Order creation
+		 log.info("Attempting to create Razorpay order for user: {} and course ID: {}", email, courseid);
+	       
 	    int amount = coursePrice;
 	    String currency = "INR";
 
@@ -53,7 +59,10 @@ public class RazorpayService {
         return keyId;
     }
 
+	@Transactional
 	public boolean verifyPaymentSignature(PaymentVerificationRequest request) {
+		 log.info("Verifying payment signature for order ID: {}", request.razorpayOrderId());
+	        
 		try {
 			JSONObject options = new JSONObject();
 			options.put("razorpay_order_id", request.razorpayOrderId());
@@ -63,6 +72,8 @@ public class RazorpayService {
             return Utils.verifyPaymentSignature(options, keySecret);
 		}catch(Exception e)
 		{
+			  log.error("An error occurred during payment signature verification for order ID: {}. Error: {}", request.razorpayOrderId(), e.getMessage(), e);
+	          
 			return false;
 		}
 	}

@@ -16,7 +16,10 @@ import com.example.project.entity.Courses;
 import com.example.project.repository.CategoryRepository;
 import com.example.project.repository.CourseRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class CategoryService {
    
 	 private final CategoryRepository categoryRepo;
@@ -31,12 +34,14 @@ public class CategoryService {
 	
 	@Transactional
 	public void save(CategoryDto categoryDto) {
-		
+		 log.info("Saving new category: {}", categoryDto.name());
+	       
 		Category category = new Category();
 		category.setName(categoryDto.name());
 		category.setDescription(categoryDto.description());
 		
 		categoryRepo.save(category);
+		 log.info("Category saved successfully.");
 	}
 	
 	
@@ -44,8 +49,11 @@ public class CategoryService {
 
 	@Transactional
 	public List<Category> getAllCategory() {
-		
-		return categoryRepo.findAll();
+		 log.info("Fetching all categories.");
+	       
+		  List<Category> categories = categoryRepo.findAll();
+	        log.info("Found {} categories.", categories.size());
+	        return categories;
 	}
 
 
@@ -53,6 +61,7 @@ public class CategoryService {
 	@Transactional
 	public  Category findByid(Long cid) {
 		// TODO Auto-generated method stub
+		log.info("Finding category by ID: {}", cid);
 		Optional<Category> category = categoryRepo.findById(cid);
 		if(category.isPresent())
 		{
@@ -70,7 +79,7 @@ public class CategoryService {
 	
 	@Transactional
 	public List<Category> findNotById(Long cid) {
-		
+		 log.info("Finding categories not by ID: {}", cid);
 		return categoryRepo.findNotById(cid);
 	}
 
@@ -78,7 +87,7 @@ public class CategoryService {
 	
 	@Transactional
 	public Category getByName(String type) {
-		
+		log.info("Finding category by name: {}", type);
 		return categoryRepo.findByName(type);
 	}
 
@@ -87,12 +96,14 @@ public class CategoryService {
 	
 	@Transactional
 	public   List<CourseResponseDto> getByCategory(String type, String page) {
-		
+		 log.info("Fetching courses for category '{}' on page '{}'", type, page);
+	      
 		int p = 0;
 		try {
 			p = Integer.parseInt(page);
 		}catch(NumberFormatException e)
-		{
+		{   log.warn("Invalid page number '{}' entered for category: {}", page, type);
+        
 			throw new NumberFormatException("Enter Valid Page Number");
 		}
 		
@@ -101,12 +112,14 @@ public class CategoryService {
 		if(!type.equals("All"))
 		{
 			Page<Courses> pa =  categoryRepo.getCourseByCategory(type,pageable);
-		 
+			log.info("Found {} courses for category '{}'.", pa.getTotalElements(), type);
+	        
 			return pa.map(course -> new CourseResponseDto(course)).getContent();
 		
 		}else {
 			 Page<Courses> pa = courseRepo.findAll(pageable);
-			
+			 log.info("Found {} courses for category '{}'.", pa.getTotalElements(), type);
+		        
 			 return pa.map(course -> new CourseResponseDto(course)).getContent();
 		}
 		

@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.project.service.RatingAndReviewsService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/rating-and-review")
+@Slf4j
 public class RatingAndReviewController {
 
 	private final RatingAndReviewsService ratingService;
@@ -35,6 +38,9 @@ public class RatingAndReviewController {
 	{
 			//get userid
 			String email = principal.getName();
+			
+			
+			log.info("Create Rating Request Recived for User : {}" , email);
 			
 			//courseid
 			Long courseid = Long.parseLong(cid);

@@ -6,24 +6,17 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import com.example.project.dto.CourseDto;
 import com.example.project.dto.CourseResponseDto;
@@ -32,6 +25,7 @@ import com.example.project.service.CourseService;
 import com.example.project.service.UsersService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 
 
@@ -39,6 +33,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/course")
+@Slf4j
 public class CourseController {
 
 
@@ -61,6 +56,8 @@ public class CourseController {
 		
 			//check for instructor
 			String email = principal.getName();
+			
+			log.info("Create Course request recived for user : {}",email);
 			//create an entry for new course
 			CourseResponseDto course = courseService.saveCourse(courseDto,email);
 			
@@ -80,7 +77,7 @@ public class CourseController {
 			
 			String email = principal.getName();
 			
-			
+			log.info("GEt Instructor courses Request recived for user : {}",email);
 			List<CourseResponseDto> listCourses =  courseService.findByInstructor(email); //usersService.findInstructorCourseByEmail(email);
 			
 			System.out.println("size of instructor courses = " + listCourses.size());
@@ -95,6 +92,7 @@ public class CourseController {
 		
 			String email = principal.getName();
 			
+			log.info("Get Student Courses Request recived for user :{}",email);
 			
 			List<CourseResponseDto> courses = usersService.findCoursesEnrolled(email);
 			
@@ -111,7 +109,7 @@ public class CourseController {
 	public ResponseEntity<?> getCourseListSize(@RequestParam("type") String type)
 	{
 		
-		
+		 
 		  Long ans =  courseService.getCourseSize(type);
 			
 			return new ResponseEntity<>(ans,HttpStatus.OK);
@@ -123,7 +121,7 @@ public class CourseController {
 	public ResponseEntity<?> deleteCourse(@RequestParam("courseid") String cid)
 	{
 		
-			
+			log.info("Course Delete Request Recived for Course id : {}" , cid);
 			courseService.deleteByid(cid);
 			
 			

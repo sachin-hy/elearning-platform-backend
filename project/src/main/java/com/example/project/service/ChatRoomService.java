@@ -11,13 +11,16 @@ import com.example.project.dto.MessageRequest;
 import com.example.project.entity.ChatRoom;
 import com.example.project.entity.Message;
 import com.example.project.entity.Users;
+import com.example.project.exception.ResourceNotFoundException;
 import com.example.project.repository.ChatRoomRepository;
 import com.example.project.repository.MessageRepository;
 import com.example.project.repository.UsersRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class ChatRoomService {
 	
 	
@@ -38,6 +41,7 @@ public class ChatRoomService {
 	@Transactional
 	public List<Map<String,Object>> getMessage(String rId) {
 		// TODO Auto-generated method stub
+		log.info("Attempting to retrieve messages for chat room ID: {}", rId);
 		
 		 Long roomId;
 		
@@ -45,6 +49,8 @@ public class ChatRoomService {
 			roomId = Long.parseLong(rId);
 		}catch(Exception e)
 		{
+			log.warn("Invalid chat room ID provided: {}", rId);
+			
 			throw new NumberFormatException();
 		}
 		
@@ -52,6 +58,7 @@ public class ChatRoomService {
 		ChatRoom chatRoom = chatRepo.findById(roomId).get();
 		 
 		List<Message> message = messageRepo.findMessageByChatRoom(chatRoom);
+		log.info("Found {} messages for chat room ID: {}", messages.size(), roomId);
 		
 		return message.stream().map(msg -> {
 			HashMap<String,Object> m = new HashMap<>();
@@ -71,6 +78,8 @@ public class ChatRoomService {
 	@Transactional
 	public ChatRoom findById(String roomId) {
 		
+		log.info("Finding chat room by ID: {}", roomId);
+		
 		Long rId = Long.parseLong(roomId);
 		return chatRepo.findById(rId).get();
 		
@@ -81,13 +90,18 @@ public class ChatRoomService {
 	@Transactional
 	public Map<String,Object> saveMessage(MessageRequest request,String email) {
 		// TODO Auto-generated method stub
+		log.info("Attempting to save message to room ID: {} from user: {}", request.getRoomId(), email);
+		
 		Long rId = Long.parseLong(request.getRoomId());
 		
 		
 		ChatRoom chatRoom = chatRepo.findById(rId).get();
 		Users user = userRepo.findByEmail(email);
 		
-		
+		if (user == null) {
+			log.warn("User not found for email: {}", email);
+			throw new ResourceNotFoundException("User not found.");
+		}
 		Message m = new Message();
 		m.setContent(request.getContent());
 		m.setSenderName(user.getFullName());
@@ -97,6 +111,7 @@ public class ChatRoomService {
 		m.addUser(user);
 		m.addChatRoom(chatRoom);
 		Message msg = messageRepo.save(m);
+		log.info("Message saved successfully with ID: {}", savedMessage.getId());
 		
 		HashMap<String,Object> messageResponse = new HashMap<>();
 		messageResponse.put("userId", msg.getUser().getUserid());
@@ -112,7 +127,11 @@ public class ChatRoomService {
 	
 	@Transactional
     public List<Map<String, Object>> ChatRooms(String email) {
-        List<ChatRoom> list = chatRepo.findChatRoomsByEmail(email);
+        
+		log.info("Fetching chat rooms for user with email: {}", email);
+        
+		
+		List<ChatRoom> list = chatRepo.findChatRoomsByEmail(email);
 
         System.out.println("chat room list isze in userservic chatroom = " + list.size());
         return list.stream()

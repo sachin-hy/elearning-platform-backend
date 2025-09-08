@@ -16,8 +16,10 @@ import com.example.project.exception.ResourceNotFoundException;
 import com.example.project.repository.UsersRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class SignUpService {
 
 	private final EmailService emailService;
@@ -38,8 +40,12 @@ public class SignUpService {
 	@Transactional
 	public void saveUser(Signupdto signupdto)
 	{
+		log.info("Attempting to save new user with email: {}", signupdto.email());
+		
 		if(userRepo.existByEmail(signupdto.email()))
 		{
+			log.warn("Sign-up failed: User already exists with email: {}", signupdto.email());
+			
 			throw new ConflictException("User Already Exist with The EmailId");
 		}
 		
@@ -48,9 +54,13 @@ public class SignUpService {
 		
 		if(recentOtp == null)
 		{
+			log.warn("Sign-up failed: No OTP found for email: {}", signupdto.email());
+			
 			throw new ResourceNotFoundException("Enter a valid Otp");
 		}else if(!recentOtp.getOtp().equals(signupdto.otp()) || recentOtp.getExpiredAt().isBefore(LocalDateTime.now()))
 		{
+			log.warn("Sign-up failed: Invalid or expired OTP for email: {}", signupdto.email());
+			
 			throw new BadRequestException("The OTP provided is incorrect or has expired.");
 		}
 		
@@ -65,6 +75,7 @@ public class SignUpService {
 	    user.setAccountType(AccountType.valueOf(signupdto.accountType()));
 	    userRepo.save(user);
 
+	    log.info("New user successfully created with email: {}", signupdto.email());
 		
 		
 	}
@@ -72,8 +83,12 @@ public class SignUpService {
 	@Transactional
 	public void sendOtp(String email)
 	{
+		log.info("Attempting to send OTP to email: {}", email);
+		
 		if(userRepo.existByEmail(email))
 		{
+			log.warn("OTP request failed: User already exists with email: {}", email);
+			
 			throw new ConflictException("User Already Exist with The EmailId");
 		}
 		
@@ -82,11 +97,16 @@ public class SignUpService {
 		System.out.println(otp);
 		try {
 		  emailService.sendEmail(email, "otp verification email", otp);
+		  log.info("OTP email sent successfully to: {}", email);
+			
 		}catch(Exception e)
 		{
+			log.error("Failed to send OTP email to {}: {}", email, e.getMessage(), e);
+			
 			throw new BadRequestException("Enter a Valid Email Address");
 		}
 		otpSchemaService.saveOTP(otp,email);
+		log.info("OTP saved in database for email: {}", email);
 		
 	}
 }

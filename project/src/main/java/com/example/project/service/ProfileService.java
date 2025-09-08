@@ -12,7 +12,10 @@ import com.example.project.entity.Users;
 import com.example.project.repository.ProfileRepository;
 import com.example.project.repository.UsersRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ProfileService {
 
 	 private final ProfileRepository profileRepo;
@@ -26,7 +29,7 @@ public class ProfileService {
 	@Transactional
 	public Profile saveProfile(ProfileDto profileDto) {
 		// TODO Auto-generated method stub
-		
+		 log.info("Saving a new standalone profile.");
 		Profile profile=new Profile();
 		profile.setGender(profileDto.gender());
 		profile.setAbout(profileDto.about());
@@ -39,7 +42,9 @@ public class ProfileService {
 	
 	@Transactional
 	public UserResponseDto updateProfile(UpdateProfileRequest updateProfile)
-	{
+	{ 
+		log.info("Updating profile for user with email: {}", updateProfile.email());
+
 		Users user = usersRepo.findByEmail(updateProfile.email());
 		
 		user.setFirstName(updateProfile.firstName());
@@ -49,6 +54,8 @@ public class ProfileService {
 		
 		if(p == null)
 		{
+			 log.info("No existing profile found. Creating a new one for user: {}", user.getEmail());
+	           
 			Profile newProfile = new Profile();
 			newProfile.setAbout(updateProfile.about());
 			newProfile.setContactNumber(updateProfile.contactNumber());
@@ -61,7 +68,8 @@ public class ProfileService {
 			p.setDob(updateProfile.dob());
 			p.setGender(updateProfile.gender());
 		}
-		
+		 log.info("Profile updated successfully for user: {}", user.getEmail());
+	       
 		return new UserResponseDto(user);
 		
 	}

@@ -24,11 +24,13 @@ import com.example.project.repository.UsersRepository;
 import com.example.project.utilis.JwtUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 
 
 
 @Service
+@Slf4j
 public class UsersService {
 
 	private final UsersRepository userRepo;
@@ -50,7 +52,8 @@ public class UsersService {
 	@Transactional
 	public UserResponseDto findUserByEmail(String email)
 	{
-		
+		log.info("Finding user by email: {}", email);
+	       
 		Users user = userRepo.findByEmail(email);
 		
 		return new UserResponseDto(user);
@@ -62,6 +65,8 @@ public class UsersService {
 	@Transactional
 	public Users findByEmail(String email)
 	{
+		 log.info("Finding user entity by email: {}", email);
+	       
 	     return userRepo.findByEmail(email);	
 	}
 	
@@ -70,7 +75,8 @@ public class UsersService {
 	
 	@Transactional
 	public String getPassword(String email) {
-		
+		 log.info("Fetching password hash for user: {}", email);
+	       
 		String dbpassword = userRepo.findPasswordByEmail(email);
 		return dbpassword;
 	}
@@ -79,7 +85,8 @@ public class UsersService {
 	
 	@Transactional
 	public String updatePassword(String email, String newPassword)  {
-		
+		log.info("Updating password for user: {}", email);
+        
 		 userRepo.updatePasswordByEmail(email,newPassword);
 		
 		 return newPassword;
@@ -88,7 +95,8 @@ public class UsersService {
 
 	@Transactional
 	public Users findBytoken(String token) {
-		
+		log.info("Finding user by token");
+        
 		return userRepo.findByToken(token);
 	}
 
@@ -98,6 +106,8 @@ public class UsersService {
 	
 	public void deleteByEmail(String email) {
 		// TODO Auto-generated method stub
+		log.info("Deleting user with email: {}", email);
+	       
 		userRepo.deleteByEmail(email);
 	}
 
@@ -109,6 +119,8 @@ public class UsersService {
 	@Transactional
 	public List<CourseResponseDto> findCoursesEnrolled(String email) {
 		// TODO Auto-generated method stub
+		  log.info("Finding enrolled courses for user: {}", email);
+	        
 		List<Courses> list = userRepo.findCoursesEnrolled(email);
 		 
 		return list.stream().map(course -> new CourseResponseDto(course)).collect(Collectors.toList());
@@ -119,7 +131,9 @@ public class UsersService {
     @Transactional
 	public void setUserToken(String email,String token) {
 		// TODO Auto-generated method stub
-		Users user = userRepo.findByEmail(email);
+    	log.info("Setting password reset token for user: {}", email);
+        
+    	Users user = userRepo.findByEmail(email);
 		 user.setToken(token);
 	     user.setResetPasswordExpires(LocalDateTime.now().plusMinutes(10));
 	}
@@ -129,11 +143,17 @@ public class UsersService {
     @Transactional
      public LoginResponseDto checkCredentials(LoginDto logindto,HttpServletRequest request)
      {
+    	log.info("Attempting to authenticate user: {}", logindto.email());
+        
     	   LoginResponseDto res = null;
     	    String email =logindto.email();
 			String password = logindto.password();
 			
 			Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(email,password));
+			
+			 log.info("User {} authenticated successfully.", logindto.email());
+	            
+			
 			String jwt="";
 			
 			if(auth.isAuthenticated())

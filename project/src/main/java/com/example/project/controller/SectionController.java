@@ -13,8 +13,10 @@ import com.example.project.dto.SectionResponseDto;
 import com.example.project.service.SectionService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 public class SectionController {
 
 	 private final SectionService sectionService;
@@ -27,7 +29,7 @@ public class SectionController {
 	@PostMapping("/create-section")
 	public ResponseEntity<?> createSection(@Valid @RequestBody SectionDto sectionDto)
 	{
-	    
+	        log.info("Create Section Request Recived for sectionname : {} ",sectionDto.sectionName());
 		     
 		    SectionResponseDto sectionResponseDto = sectionService.saveSection(sectionDto);
 
