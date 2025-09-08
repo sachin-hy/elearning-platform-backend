@@ -72,7 +72,7 @@ public class PaymentService {
          Courses course = courseRepo.findById(courseId)
         		    .orElseThrow(() -> new ResourceNotFoundException("Course Not Found! Try Again"));
          
-         if (userRepo.existsByIdAndCourses_Courseid(user.getUserid(), courseId)) {
+         if (userRepo.existsByUseridAndCourses_Courseid(user.getUserid(), courseId)) {
         	   log.info("User {} already purchased course {}", email, courseId);
         	    throw new ConflictException("You have already purchased this course.");
         	}

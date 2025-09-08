@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,6 +43,7 @@ public class Users implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String email;	private String password;
+    @Enumerated(EnumType.STRING)
 	private AccountType accountType;
 	private Boolean active;
 	private Boolean approve;

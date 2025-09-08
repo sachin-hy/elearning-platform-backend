@@ -56,5 +56,5 @@ public interface UsersRepository extends JpaRepository<Users,Long>{
 	boolean existByEmail(@Param("email") String email);
 
 
-	boolean existsByIdAndCourses_Courseid(Long userid, long courseId);
+	boolean existsByUseridAndCourses_Courseid(Long userid, long courseId);
 	}
