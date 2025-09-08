@@ -19,13 +19,15 @@ import com.example.project.repository.CourseRepository;
 @Service
 public class CategoryService {
    
-	@Autowired
-	private CategoryRepository categoryRepo;
+	 private final CategoryRepository categoryRepo;
+	    private final CourseRepository courseRepo;
 
-	
-	@Autowired
-	private CourseRepository courseRepo;
-	
+	    public CategoryService(CategoryRepository categoryRepo, CourseRepository courseRepo) {
+	        this.categoryRepo = categoryRepo;
+	        this.courseRepo = courseRepo;
+	    }
+	    
+	    
 	
 	@Transactional
 	public void save(CategoryDto categoryDto) {
@@ -36,6 +38,9 @@ public class CategoryService {
 		
 		categoryRepo.save(category);
 	}
+	
+	
+	
 
 	@Transactional
 	public List<Category> getAllCategory() {
@@ -57,18 +62,28 @@ public class CategoryService {
 			return null;
 		}
 	}
+	
+	
+	
+	
+	
+	
 	@Transactional
 	public List<Category> findNotById(Long cid) {
 		
 		return categoryRepo.findNotById(cid);
 	}
 
+	
+	
 	@Transactional
 	public Category getByName(String type) {
 		
 		return categoryRepo.findByName(type);
 	}
 
+	
+	
 	
 	@Transactional
 	public   List<CourseResponseDto> getByCategory(String type, String page) {

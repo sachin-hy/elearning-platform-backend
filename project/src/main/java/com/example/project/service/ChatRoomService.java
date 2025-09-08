@@ -4,10 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.project.dto.MessageRequest;
@@ -24,24 +21,38 @@ import jakarta.transaction.Transactional;
 public class ChatRoomService {
 	
 	
-	@Autowired
-	private ChatRoomRepository chatRepo;
+	private final ChatRoomRepository chatRepo;
+    private final MessageRepository messageRepo;
+    private final UsersRepository userRepo;
 	
-	@Autowired
-	private MessageRepository messageRepo;
 	
-	@Autowired
-	private UsersRepository userRepo;
-	
-	/*return list of messages of the roomid*/
+    public ChatRoomService(ChatRoomRepository chatRepo, MessageRepository messageRepo, UsersRepository userRepo) {
+             this.chatRepo = chatRepo;
+             this.messageRepo = messageRepo;
+             this.userRepo = userRepo;
+         }
+    
+    
+    
+    
 	@Transactional
-	public List<Map<String,Object>> getMessage(Long roomId) {
+	public List<Map<String,Object>> getMessage(String rId) {
 		// TODO Auto-generated method stub
-		 ChatRoom chatRoom = chatRepo.findById(roomId).get();
+		
+		 Long roomId;
+		
+		try {
+			roomId = Long.parseLong(rId);
+		}catch(Exception e)
+		{
+			throw new NumberFormatException();
+		}
+		
+		
+		ChatRoom chatRoom = chatRepo.findById(roomId).get();
 		 
 		List<Message> message = messageRepo.findMessageByChatRoom(chatRoom);
 		
-		System.out.println("message list size = " + message.size());
 		return message.stream().map(msg -> {
 			HashMap<String,Object> m = new HashMap<>();
 			m.put("userId", msg.getUser().getUserid());
@@ -54,6 +65,8 @@ public class ChatRoomService {
 		}).collect(Collectors.toList());
 	}
 
+	
+	
 
 	@Transactional
 	public ChatRoom findById(String roomId) {
@@ -69,7 +82,6 @@ public class ChatRoomService {
 	public Map<String,Object> saveMessage(MessageRequest request,String email) {
 		// TODO Auto-generated method stub
 		Long rId = Long.parseLong(request.getRoomId());
-		System.out.println("message save is called ===================");
 		
 		
 		ChatRoom chatRoom = chatRepo.findById(rId).get();

@@ -1,13 +1,11 @@
 package com.example.project.service;
 
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.project.dto.SubSectionDto;
 import com.example.project.dto.SubSectionResponseDto;
@@ -15,23 +13,25 @@ import com.example.project.entity.Section;
 import com.example.project.entity.SubSection;
 import com.example.project.exception.InternalServerError;
 import com.example.project.exception.ResourceNotFoundException;
+import com.example.project.exception.UnsupportedFileTypeException;
 import com.example.project.repository.SectionRepository;
 import com.example.project.repository.SubSectionRepository;
 import com.example.project.utilis.ImageUploader;
 
-import jakarta.persistence.EntityNotFoundException;
-
 @Service
 public class SubSectionService {
 	
-	@Autowired
-	private SubSectionRepository subRepo;
-	@Autowired
-	private SectionRepository sectionRepo;
+	private final SubSectionRepository subRepo;
+    private final SectionRepository sectionRepo;
+    private final ImageUploader imageUploader;
+    private final Tika tika;
 
-	@Autowired
-	private ImageUploader imageUploader;
-	
+    public SubSectionService(SubSectionRepository subRepo, SectionRepository sectionRepo, ImageUploader imageUploader, Tika tika) {
+        this.subRepo = subRepo;
+        this.sectionRepo = sectionRepo;
+        this.imageUploader = imageUploader;
+        this.tika = tika;
+    }
 	
 	@Transactional
 	public SubSectionResponseDto saveSubSection(SubSectionDto sectionDto) {
@@ -41,6 +41,26 @@ public class SubSectionService {
 			throw new ResourceNotFoundException("Enter Valid Section Id");
 		}
 		
+		MultipartFile file = sectionDto.vedioUrl();
+		
+		
+		// check the file is not corrupted and get its type
+		String type="";
+		try {
+			type = tika.detect(file.getInputStream());
+		}catch(Exception e)
+		{
+			throw new UnsupportedFileTypeException("Could not read or process the uploaded file. It may be corrupted.");
+		}
+		
+		
+		//chack the type of file
+		if(!"video/mp4".equals(type) && !"video/wmv".equals(type))
+        { 
+	        throw new UnsupportedFileTypeException("Invalid file type: only mp4 and wmv video are allowed.");
+        }
+		
+		// uplodae file to cloudnary and get the url
 		String vedioUrl = "";
 		try {
 		 vedioUrl = imageUploader.uploadFile(sectionDto.vedioUrl());
@@ -49,9 +69,10 @@ public class SubSectionService {
 			throw new InternalServerError("Server Error Please Try After Some Time");
 		}
 		
-		
+		//find section
 		Section section = sectionRepo.findById(sectionDto.sectionid()).get();
 		
+		//create new subsection
 		SubSection subsection = new SubSection();
 		subsection.setTitle(sectionDto.title());
 		subsection.setTimeDuration(sectionDto.timeDuration());
@@ -134,9 +155,7 @@ public class SubSectionService {
 		
 		subRepo.deleteById(subsectionid);
 		
-//		Section section = subsection.getSection();
-//		section.getSubSection().remove(subsection);
-//		sectionRepo.save(section);
+
 		
 	}
 

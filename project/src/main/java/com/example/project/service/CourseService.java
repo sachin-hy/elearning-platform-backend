@@ -1,57 +1,87 @@
 package com.example.project.service;
 
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.apache.tika.Tika;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.example.project.dto.AllRatingResponseDto;
 import com.example.project.dto.CourseDto;
 import com.example.project.dto.CourseResponseDto;
-import com.example.project.dto.SectionResponseDto;
-import com.example.project.dto.SubSectionResponseDto;
 import com.example.project.entity.Category;
 import com.example.project.entity.ChatRoom;
 import com.example.project.entity.Courses;
-import com.example.project.entity.Section;
 import com.example.project.entity.Users;
 import com.example.project.exception.ConflictException;
 import com.example.project.exception.ResourceNotFoundException;
+import com.example.project.exception.UnsupportedFileTypeException;
 import com.example.project.repository.CategoryRepository;
 import com.example.project.repository.ChatRoomRepository;
 import com.example.project.repository.CourseRepository;
 import com.example.project.repository.UsersRepository;
+import com.example.project.utilis.ImageUploader;
 
 @Service
 public class CourseService {
 	
-	@Autowired
-	private CourseRepository courseRepo;
 	
-	@Autowired
-	private UsersRepository userRepo;
+	private final ImageUploader imageUploader;
+    private final CourseRepository courseRepo;
+    private final UsersRepository userRepo;
+    private final CategoryRepository categoryRepo;
+    private final ChatRoomRepository chatRoomRepo;
+    private final Tika tika;
 
-	@Autowired
-	private CategoryRepository categoryRepo;
-	
-	@Autowired
-	private ChatRoomRepository chatRoomRepo;
-	
+    public CourseService(ImageUploader imageUploader, CourseRepository courseRepo, UsersRepository userRepo,
+                         CategoryRepository categoryRepo, ChatRoomRepository chatRoomRepo, Tika tika) {
+        this.imageUploader = imageUploader;
+        this.courseRepo = courseRepo;
+        this.userRepo = userRepo;
+        this.categoryRepo = categoryRepo;
+        this.chatRoomRepo = chatRoomRepo;
+        this.tika = tika;
+    }
+    
+    
+    
+    
 	
 	@Transactional
-	public CourseResponseDto saveCourse(CourseDto courseDto, String email,  String thumbnailImage) {
+	public CourseResponseDto saveCourse(CourseDto courseDto, String email) throws IOException {
+		
+		
+		
+		MultipartFile file = courseDto.file();
+		
+		if(file.isEmpty())
+		{
+			throw new ResourceNotFoundException("Select the File to Upload");
+		}
+		
+		
+		String type = tika.detect(file.getInputStream());
+			
+	    if(!"image/jpeg".equals(type) && !"image/png".equals(type))
+	    {
+	    	throw new UnsupportedFileTypeException("Invalid file type: only JPEG and PNG images are allowed.");
+	    }
+		
+		//Upload FIle to Cloudnary 
+	    String thumbnailImage  = imageUploader.uploadFile(file);;
+	    
+	   //Get Instrucotre
 		Users instructor = userRepo.findByEmail(email);
+		
+		//check valid course id
 		Long cid =0l;
 		try {
 			cid = Long.parseLong(courseDto.category());
@@ -61,6 +91,7 @@ public class CourseService {
 			throw new NumberFormatException("Enter Valid Category");
 		}
 		
+		//get category of the course using the category id
 		Category c = categoryRepo.findById(cid).get();
 		
 		
@@ -69,7 +100,7 @@ public class CourseService {
 			throw new ResourceNotFoundException("Enter valid Category Type");
 		}
 		
-		
+		//create new course
 		Courses course =new Courses();
 		course.setCourseName(courseDto.courseName());
 		course.setCourseDescription(courseDto.courseDescription());
@@ -81,23 +112,27 @@ public class CourseService {
         
         course.addInstructor(instructor);
         course.addCategory(c);
+        
+        
+        //save course
         Courses co = courseRepo.save(course);
         
+        
+        //create chatroom for the course
         ChatRoom chatRoom = new ChatRoom();
 		chatRoom.setRoomName(courseDto.courseName());
 		chatRoom.setCourseImageUrl(thumbnailImage);
 	   
+		//save chatroom
 		ChatRoom ch = chatRoomRepo.save(chatRoom);
 		
+		//add instructor to chatrom
 		instructor.addChatRoom(ch);
-//		chatRoom.getUsers().add(instructor);
-//	    instructor.getChatRoom().add(chatRoom);
+        
+		//add chatroom of the course
 	    co.addChatRoom(ch);
 		
-//	    chatRoom.setCourse(course);
-		
-        
-        
+     // return the response of the course
         return new CourseResponseDto(co);
 	}
 
@@ -210,14 +245,6 @@ public class CourseService {
 
 
 
-
-
-
-//	@Transactional
-//	public boolean checkCourseById(Long courseid) {
-//		// TODO Auto-generated method stub
-//		return 
-//	}
 
 
 

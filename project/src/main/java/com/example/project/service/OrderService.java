@@ -2,7 +2,6 @@ package com.example.project.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,28 +15,19 @@ import com.example.project.entity.Courses;
 import com.example.project.entity.Orders;
 import com.example.project.entity.Users;
 import com.example.project.enums.OrderStatus;
-import com.example.project.repository.ChatRoomRepository;
-import com.example.project.repository.CourseRepository;
 import com.example.project.repository.OrdersRepository;
-import com.example.project.repository.UsersRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
 public class OrderService {
 	
 	
-	@Autowired
-	private OrdersRepository ordersRepo;
+	 private final OrdersRepository ordersRepo;
+
+	    public OrderService(OrdersRepository ordersRepo) {
+	        this.ordersRepo = ordersRepo;
+	    }
 	
-	@Autowired
-	private UsersRepository userRepo;
-	
-	@Autowired
-	private CourseRepository courseRepo;
-	
-	@Autowired
-	private ChatRoomRepository chatRepo;
 	
 	
 	@Transactional
@@ -45,12 +35,7 @@ public class OrderService {
 	{
 		Orders orderEntity = ordersRepo.findByRazorpayOrderId(request.razorpayOrderId());
 		
-//		orderEntity.setStatus(OrderStatus.SUCCESS);
-//        orderEntity.setRazorpayPaymentId(request.razorpayPaymentId());
-//        orderEntity.setRazorpaySignature(request.razorpaySignature());
-//        orderEntity.setUpdatedAt(LocalDateTime.now());
-//        ordersRepo.save(orderEntity);
-        
+
         return orderEntity;
 	}
 

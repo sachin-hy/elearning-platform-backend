@@ -20,16 +20,26 @@ import com.example.project.dto.CourseResponseDto;
 import com.example.project.entity.Category;
 import com.example.project.service.CategoryService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
 
-	@Autowired
-	private CategoryService categoryService;
+	
+	private final CategoryService categoryService;
+	
+	
+	public CategoryController(CategoryService categoryService)
+	{
+		this.categoryService=categoryService;
+	}
+	
+	
 	
 	@PostMapping
-	public ResponseEntity<String> createCategory(@RequestBody CategoryDto categoryDto)
+	public ResponseEntity<String> createCategory(@Valid @RequestBody CategoryDto categoryDto)
 	{
 		
 		

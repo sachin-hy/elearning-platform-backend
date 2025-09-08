@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.example.project.exception.ImageUploadException;
 
 @Service
 public class ImageUploader {
@@ -38,7 +39,7 @@ public class ImageUploader {
 				));
 		}catch(Exception  e)
 		{
-			System.out.println("error = " + e);
+			throw new ImageUploadException("Internal Server Error ! Try Again");
 		}
 		
 		return uploadResult.get("secure_url").toString();

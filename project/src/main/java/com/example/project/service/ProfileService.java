@@ -1,9 +1,6 @@
 package com.example.project.service;
 
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +15,13 @@ import com.example.project.repository.UsersRepository;
 @Service
 public class ProfileService {
 
-	@Autowired
-	private ProfileRepository profileRepo;
-	
-	@Autowired
-	private UsersRepository usersRepo;
+	 private final ProfileRepository profileRepo;
+	    private final UsersRepository usersRepo;
+
+	    public ProfileService(ProfileRepository profileRepo, UsersRepository usersRepo) {
+	        this.profileRepo = profileRepo;
+	        this.usersRepo = usersRepo;
+	    }
 	
 	@Transactional
 	public Profile saveProfile(ProfileDto profileDto) {

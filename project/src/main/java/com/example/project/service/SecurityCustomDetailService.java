@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.project.entity.Users;
+import com.example.project.enums.AccountType;
 import com.example.project.repository.UsersRepository;
 
 
@@ -16,8 +17,11 @@ import com.example.project.repository.UsersRepository;
 public class SecurityCustomDetailService implements UserDetailsService{
 
 	
-	@Autowired
-	private UsersRepository usersRepo;
+	 private final UsersRepository usersRepo;
+
+	    public SecurityCustomDetailService(UsersRepository usersRepo) {
+	        this.usersRepo = usersRepo;
+	    }
 	
 	@Override
 	@Transactional
@@ -29,7 +33,7 @@ public class SecurityCustomDetailService implements UserDetailsService{
 		return User.builder()
 		            .username(user.getEmail())
 		            .password(user.getPassword())
-		            .roles(user.getAccountType())  // This should be like "USER", "ADMIN", etc.
+		            .roles(user.getAccountType().name())  // This should be like "USER", "ADMIN", etc.
 		            .build();
 	}
 

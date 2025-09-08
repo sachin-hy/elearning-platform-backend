@@ -1,7 +1,8 @@
 package com.example.project.dto;
 
-import com.example.project.entity.Profile;
+
 import com.example.project.entity.Users;
+import com.example.project.enums.AccountType;
 
 public record UserResponseDto(
 		  String userId,
@@ -9,7 +10,7 @@ public record UserResponseDto(
 		  String firstName,
 		  String lastName,
 		  String image,
-		  String accountType,
+		 AccountType accountType,
 		  ProfileResponseDto additionalDetails ) 
 {
      public UserResponseDto(Users user)

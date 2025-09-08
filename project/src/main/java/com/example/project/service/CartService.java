@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import com.example.project.dto.CourseResponseDto;
 import com.example.project.entity.Cart;
@@ -27,14 +25,15 @@ import jakarta.transaction.Transactional;
 public class CartService {
 
 	
-	@Autowired
-	private CartRepository cartRepo;
-	
-	@Autowired
-	private UsersRepository userRepo;
-	
-	@Autowired
-	private CourseRepository courseRepo;
+	private final CartRepository cartRepo;
+    private final UsersRepository userRepo;
+    private final CourseRepository courseRepo;
+
+    public CartService(CartRepository cartRepo, UsersRepository userRepo, CourseRepository courseRepo) {
+        this.cartRepo = cartRepo;
+        this.userRepo = userRepo;
+        this.courseRepo = courseRepo;
+    }
 	
 	
 	@Transactional
@@ -64,18 +63,6 @@ public class CartService {
 	}
 
 
-//	@Transactional
-//	public boolean findByUserAndCourse(Users user, Courses course) {
-//		// TODO Auto-generated method stub
-//		Cart cart = cartRepo.findByUserAndCartCourse(user,course);
-//		
-//		if(cart != null)
-//		{
-//			return true;
-//		}
-//		
-//		return false;
-//	}
 
 	@Transactional
 	public CourseResponseDto save(String email,String courseid) {

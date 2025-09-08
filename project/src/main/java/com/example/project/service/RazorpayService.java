@@ -1,34 +1,32 @@
 package com.example.project.service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.project.dto.PaymentVerificationRequest;
-import com.example.project.entity.Courses;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
-import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
 
 @Service
 public class RazorpayService {
 
-	@Value("${razorpay.key_id}")
-	private String keyId;
-	@Value("${razorpay.key_secret}")
-	private String keySecret;
+	    @Value("${razorpay.key_id}")
+	    private String keyId;
+	    @Value("${razorpay.key_secret}")
+	    private String keySecret;
+
+	    private final RazorpayClient razorpayClient;
+
+	    public RazorpayService(RazorpayClient razorpayClient) {
+	        this.razorpayClient = razorpayClient;
+	    }
 	
-	@Autowired
-	private RazorpayClient razorpayClient;
-	
-	@Autowired
-	private CourseService courseService;
-	
+	    
+	    
 	public Order createRazorpayOrder(Long courseid,int coursePrice, String email) throws Exception {
 	    // Order creation
 	    int amount = coursePrice;

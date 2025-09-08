@@ -1,12 +1,7 @@
 package com.example.project.service;
 
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +14,17 @@ import com.example.project.exception.ResourceNotFoundException;
 import com.example.project.repository.CourseRepository;
 import com.example.project.repository.SectionRepository;
 
-import jakarta.persistence.EntityNotFoundException;
-
 
 @Service
 public class SectionService {
 
-	@Autowired
-	private SectionRepository sectionRepo;
-	@Autowired
-	private CourseRepository courseRepo;
-	
+	private final SectionRepository sectionRepo;
+    private final CourseRepository courseRepo;
+
+    public SectionService(SectionRepository sectionRepo, CourseRepository courseRepo) {
+        this.sectionRepo = sectionRepo;
+        this.courseRepo = courseRepo;
+    }
 	
 	
 	@Transactional
@@ -46,19 +41,15 @@ public class SectionService {
 		}
 		
 		Courses course = courseRepo.findById(cid).get();
-		//create object of new section
+	
 		Section section = new Section();
 		section.setSectionName(sectionDto.sectionName());
 		
 		course.addSection(section);
-		
-		
-//		section.setCourse(course);
-		
+
 		courseRepo.save(course);
 		
-		//save the section in the coursecontent list
-//		course.getCourseContent().add(s);
+	
 		return new SectionResponseDto(section);
 		
 	}
@@ -77,7 +68,7 @@ public class SectionService {
 	public void deleteByid(String sectionid) {
 		// TODO Auto-generated method stub
 		
-		Long sid = 0l;//Long.parseLong(sectionid);
+		Long sid ;
 		try {
 			sid = Long.parseLong(sectionid);
 		}catch(NumberFormatException e)
@@ -97,11 +88,7 @@ public class SectionService {
 		
 		sectionRepo.deleteById(sid);
 		
-//	     Courses course = section.getCourse();
-			
-//			course.getCourseContent().remove(section);
-//			courseRepo.save(course);
-//		}
+
 		
 	}
 

@@ -24,6 +24,8 @@ import com.example.project.entity.Users;
 import com.example.project.service.EmailService;
 import com.example.project.service.UsersService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/auth")
 public class ForgotPassword {
@@ -75,7 +77,7 @@ public class ForgotPassword {
 	
 	
 	@PatchMapping("/reset-password")
-	public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetDto)
+	public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordDto resetDto)
 	{
 		
 		try

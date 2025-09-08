@@ -1,5 +1,6 @@
 package com.example.project.controller;
 
+import java.io.IOException;
 import java.security.Principal;
 
 import java.util.ArrayList;
@@ -26,22 +27,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.project.dto.CourseDto;
 import com.example.project.dto.CourseResponseDto;
-import com.example.project.entity.Courses;
-import com.example.project.entity.Section;
-import com.example.project.entity.SubSection;
-import com.example.project.entity.Category;
-import com.example.project.entity.ChatRoom;
-import com.example.project.entity.Users;
-import com.example.project.service.CategoryService;
-import com.example.project.service.ChatRoomService;
 import com.example.project.service.CourseService;
 
 import com.example.project.service.UsersService;
-import com.example.project.utilis.ImageUploader;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import jakarta.validation.Valid;
+
 
 
 
@@ -50,56 +41,28 @@ import org.springframework.data.domain.Pageable;
 @RequestMapping("/course")
 public class CourseController {
 
-	@Autowired
-	private ImageUploader imageUploader;
+
+	private final UsersService usersService;
+	private final CourseService courseService;
 	
-	@Autowired
-	private UsersService usersService;
 	
-	@Autowired
-	private CategoryService categoryService;
+	public CourseController( UsersService usersService,CourseService courseService)
+	{
+		this.usersService = usersService;
+		this.courseService = courseService;
+	}
 	
-	@Autowired
-	private CourseService courseService;
 	
-	@Autowired
-	private ChatRoomService chatRoomService;
 	
 	@PostMapping("/create-course")
-	public ResponseEntity<?> createCourse( @ModelAttribute CourseDto courseDto,
-			                                    Principal principal)
+	public ResponseEntity<?> createCourse(@Valid @ModelAttribute CourseDto courseDto,
+			                                    Principal principal) throws IOException
 	{
 		
-	
-			
-			 MultipartFile file = courseDto.file();
-			
-			 if(file.isEmpty()) {
-				  
-			        return new ResponseEntity<>("File is empty!",HttpStatus.BAD_REQUEST);
-			 }
-			
-		
-			
-			
-			
-			
 			//check for instructor
 			String email = principal.getName();
-			
-//			
-			
-			String thumbnailImage  = "";
-			//upload Image
-			try {
-		      thumbnailImage = imageUploader.uploadFile(file);
-			}catch(Exception e)
-			{
-				return new ResponseEntity<>("Internal Server Error",HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		
 			//create an entry for new course
-			CourseResponseDto course = courseService.saveCourse(courseDto,email,thumbnailImage);
+			CourseResponseDto course = courseService.saveCourse(courseDto,email);
 			
 		 
 			
@@ -114,7 +77,7 @@ public class CourseController {
 	public ResponseEntity<?> getAllInstructorCourses(Principal principal )
 	{
 		
-			System.out.println("get instructor course is called");
+			
 			String email = principal.getName();
 			
 			
@@ -142,50 +105,7 @@ public class CourseController {
 	}
 	
 	
-	
-	
-	
-//	@GetMapping("/categories/{type}/courses")
-//	public ResponseEntity<?> getCourseByCategory(@PathVariable String type,@RequestParam("page")  String page)   
-//	{
-//		try {
-//			
-//			int p = Integer.parseInt(page);
-//			Pageable pageable = PageRequest.of(p, 2);
-//	        
-//			
-//			System.out.println("page number to excess the /getcoursesbycategory -------------------- =  " + p);
-//			if(!type.equals("All"))
-//			{
-//				
-//			    Category category = categoryService.getByName(type);
-//			    List<CourseResponseDto> courseslist = null;
-//			    if(category != null)
-//			    {
-//			    	courseslist = courseService.getByCategory(category,pageable);
-//				    
-//			    }else {
-//			    	System.out.println("category is equals to null");
-//			    }
-//			    
-//			      return new ResponseEntity<>(courseslist,HttpStatus.OK);
-//			}
-//			
-//			else {
-//				System.out.println("category All is called");
-//				
-//				List<CourseResponseDto> courseslist = courseService.getAll(pageable);
-//				
-//				return new ResponseEntity<>(courseslist,HttpStatus.OK);
-//			} 
-//		}catch(Exception e)
-//		{
-//			System.out.println("error = /getcoursesbycategory " + e);
-//			return new ResponseEntity<>("Server Error! Please try Again",HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
-//	
-//	
+
 	               
 	@GetMapping("/courses/size")  
 	public ResponseEntity<?> getCourseListSize(@RequestParam("type") String type)

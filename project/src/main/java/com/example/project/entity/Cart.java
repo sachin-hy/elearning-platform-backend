@@ -11,9 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PreRemove;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,19 +38,6 @@ public class Cart {
 	private Courses cartCourse;
 	
 	
-	
-//	@PreRemove
-//	public void preRemove() {
-//	    if (user != null) {
-//	        user.getCartCourses().remove(this);
-//	        user = null;
-//	    }
-//	    if (cartCourse != null) {
-//	        cartCourse.getCart().remove(this);
-//	        cartCourse = null;
-//	    }
-//	}
-//	
 	
 	public void addCourse(Courses course)
 	{

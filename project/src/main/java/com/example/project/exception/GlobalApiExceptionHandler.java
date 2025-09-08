@@ -4,10 +4,13 @@ package com.example.project.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 
-@ControllerAdvice
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
+@RestControllerAdvice
 public class GlobalApiExceptionHandler {
 
 	
@@ -38,5 +41,33 @@ public class GlobalApiExceptionHandler {
 	    public ResponseEntity<String> handleInternalServer(InternalServerError ex)
 	    {
 	    	return new ResponseEntity<>(ex.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	    
+	    @ExceptionHandler(MaxUploadSizeExceededException.class)
+	    public ResponseEntity<String> handleFileSizeException(MaxUploadSizeExceededException ex)
+	    {
+	    	return new ResponseEntity<>("File size exceeds the maximum limit. Please upload a file smaller than 500MB.",HttpStatus.PAYLOAD_TOO_LARGE);
+	    }
+	    
+	    @ExceptionHandler(UnsupportedFileTypeException.class)
+	    public ResponseEntity<String> handleMediaTypeException(UnsupportedFileTypeException ex)
+	    {
+	    	return new ResponseEntity<>(ex.getMessage(),HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+	    }
+	    
+	    @ExceptionHandler(MethodArgumentNotValidException.class)
+	    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+	        String errorMessage = ex.getBindingResult()
+	                                .getFieldError()
+	                                .getDefaultMessage();
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }
+	    
+	    
+	    @ExceptionHandler(IllegalArgumentException.class)
+	    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex)
+	    {
+	    	String errorMessage = ex.getMessage();
+	    	return new ResponseEntity<>(errorMessage,HttpStatus.BAD_REQUEST);
 	    }
 }

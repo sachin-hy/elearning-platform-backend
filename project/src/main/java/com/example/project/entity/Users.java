@@ -2,14 +2,12 @@ package com.example.project.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.example.project.enums.AccountType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -20,14 +18,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.PreRemove;
+
 
 
 @Entity
@@ -43,11 +40,11 @@ public class Users implements Serializable {
 	private Long userid;
 	private String firstName;
 	private String lastName;
-	private String email;
-	private String password;
-	private String accountType;
+	private String email;	private String password;
+	private AccountType accountType;
 	private Boolean active;
 	private Boolean approve;
+	
 	private String image;
 	private String token;
 	private LocalDateTime resetPasswordExpires;
@@ -108,60 +105,12 @@ public class Users implements Serializable {
 	private Set<Orders> userOrder = new HashSet<>();
 	
 	
-	public enum AccountType {
-	    ADMIN, STUDENT, INSTRUCTOR
-	}
+	
 	
 	
 	public String getFullName() {
         return firstName + " " + lastName;
     }
-	
-	
-	
-//	
-//	
-//	@PreRemove
-//	private void preRemove() {
-////	    // Remove user from all enrolled courses
-////	    if (courses != null) {
-////	        for (Courses course : new ArrayList<>(courses)) {
-////	            course.getStudentsEnrolled().remove(this);
-////	        }
-////	        courses.clear();
-////	    }
-//
-//	    // Remove user from all chatrooms
-//	    if (chatRoom != null) {
-//	        for (ChatRoom room : new ArrayList<>(chatRoom)) {
-//	            room.getUsers().remove(this);
-//	        }
-//	        chatRoom.clear();
-//	    }
-//
-//	    // Remove cart entries (already cascaded, optional)
-//	    if (cartCourses != null) {
-//	        for (Cart cart : new ArrayList<>(cartCourses)) {
-//	            cart.setUser(null);  // break FK
-//	        }
-//	        cartCourses.clear();
-//	    }
-//	}
-
-	
-	
-	
-	
-//	public void enrollInCourse(Courses course)
-//	{
-//		courses.add(course);
-//		course.getStudentsEnrolled().add(this);
-//	}
-//	
-//	public void unenrollFromCourse(Courses course) {
-//        courses.remove(course);
-//        course.getStudentsEnrolled().remove(this);
-//    }
 	
 	
 	

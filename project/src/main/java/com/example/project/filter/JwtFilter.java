@@ -27,11 +27,13 @@ import org.springframework.util.AntPathMatcher;
 @Component
 public class JwtFilter extends OncePerRequestFilter{
 
-	@Autowired
-	private SecurityCustomDetailService  securityCustomDetailService;
-	
-	@Autowired
-	private JwtUtil jwtUtil;
+	 private final SecurityCustomDetailService securityCustomDetailService;
+	    private final JwtUtil jwtUtil;
+
+	    public JwtFilter(SecurityCustomDetailService securityCustomDetailService, JwtUtil jwtUtil) {
+	        this.securityCustomDetailService = securityCustomDetailService;
+	        this.jwtUtil = jwtUtil;
+	    }
 	
 	private Set<String> paths = Set.of("/auth/*","/login","/signup","/sendotp","/categories","/categories/*/courses","/course/courses/size","/chat/**","/app/**","/topic/**");
 
@@ -39,14 +41,14 @@ public class JwtFilter extends OncePerRequestFilter{
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 	    String path = request.getServletPath();
-	    //System.out.println("path request ============================= " + path);
+	   
 	    AntPathMatcher matcher = new AntPathMatcher();
 	    
 	    for(String s:paths)
 	    {
 	    	if(matcher.match(s,path))
 	    	{
-	    		 System.out.println("pathmacth and passed without filer");
+	    		 
 	    		 filterChain.doFilter(request, response);
 		    	 return;
 	    	}

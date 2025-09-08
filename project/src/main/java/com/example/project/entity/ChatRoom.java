@@ -2,7 +2,6 @@ package com.example.project.entity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -10,11 +9,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PreRemove;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,15 +39,7 @@ public class ChatRoom {
 	@OneToOne(mappedBy = "chatRoom")
 	private Courses course;
 
-//	@PreRemove
-//	private void preRemove() {
-//	    if (users != null) {
-//	        for (Users u : new ArrayList<>(users)) {
-//	            u.getChatRoom().remove(this);
-//	        }
-//	        users.clear();
-//	    }
-//	}
+
 	
 	public void removeUser()
 	{

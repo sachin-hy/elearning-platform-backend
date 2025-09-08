@@ -3,16 +3,13 @@ package com.example.project.service;
 import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.project.dto.Signupdto;
-import com.example.project.dto.UserResponseDto;
 import com.example.project.entity.OTPSchema;
 import com.example.project.entity.Users;
+import com.example.project.enums.AccountType;
 import com.example.project.exception.BadRequestException;
 import com.example.project.exception.ConflictException;
 import com.example.project.exception.ResourceNotFoundException;
@@ -23,18 +20,20 @@ import jakarta.transaction.Transactional;
 @Service
 public class SignUpService {
 
-	@Autowired
-	private EmailService emailService;
-	@Autowired
-	private UsersRepository userRepo;
-	
-	@Autowired
-	private OTPSchemaService otpSchemaService;
-	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final EmailService emailService;
+    private final UsersRepository userRepo;
+    private final OTPSchemaService otpSchemaService;
+    private final PasswordEncoder passwordEncoder;
 
-	
+    public SignUpService(EmailService emailService, UsersRepository userRepo,
+                         OTPSchemaService otpSchemaService, PasswordEncoder passwordEncoder) {
+        this.emailService = emailService;
+        this.userRepo = userRepo;
+        this.otpSchemaService = otpSchemaService;
+        this.passwordEncoder = passwordEncoder;
+    }
+    
+    
 	
 	@Transactional
 	public void saveUser(Signupdto signupdto)
@@ -63,9 +62,9 @@ public class SignUpService {
 	    user.setEmail(signupdto.email());
 	    user.setPassword(passwordEncoder.encode(signupdto.password()));
 	    user.setAccountType(null);
-	    user.setAccountType(signupdto.accountType());
+	    user.setAccountType(AccountType.valueOf(signupdto.accountType()));
 	    userRepo.save(user);
-//	    return new UserResponseDto(user);
+
 		
 		
 	}

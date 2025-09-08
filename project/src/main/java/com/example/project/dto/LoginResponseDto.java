@@ -1,7 +1,7 @@
 package com.example.project.dto;
 
-import com.example.project.entity.Profile;
-import com.example.project.entity.Users;
+
+import com.example.project.enums.AccountType;
 
 
 
@@ -10,7 +10,7 @@ import com.example.project.entity.Users;
 public record LoginResponseDto ( 
 		String userId,
 		String token,
-        String accountType,
+        AccountType accountType,
         String firstName,
    	    String lastName,
    	    String email,

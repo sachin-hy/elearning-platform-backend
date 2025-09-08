@@ -2,6 +2,8 @@ package com.example.project.configuration;
 
 
 import java.util.Arrays;
+
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -87,6 +89,12 @@ public class WebSecurity {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+    
+    @Bean
+    public Tika checkFile()
+    {
+    	return new Tika();
     }
     
 }

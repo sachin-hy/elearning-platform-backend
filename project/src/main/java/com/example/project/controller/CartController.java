@@ -28,16 +28,13 @@ import org.springframework.data.domain.Pageable;
 
 @RestController
 public class CartController {
-     
-	@Autowired
-	private UsersService usersService;
+ 
+	private final CartService cartService;
 	
-	@Autowired
-	private CartService cartService;
-	@Autowired
-	private CourseService courseService;
-	
-	
+	public CartController(CartService cartService)
+	{
+		this.cartService =cartService;
+	}
 	
 	@GetMapping("/cart")
 	public ResponseEntity<?> cart(@RequestParam("page") String page, Principal principal)
