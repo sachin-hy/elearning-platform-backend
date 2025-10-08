@@ -1,6 +1,10 @@
 package com.example.project.service;
 
 
+import com.example.project.service.Interface.ProfileServiceInterface;
+import com.example.project.service.Interface.UsersServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,48 +18,33 @@ import com.example.project.repository.UsersRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
-public class ProfileService {
+public class ProfileService implements ProfileServiceInterface {
 
-	 private final ProfileRepository profileRepo;
-	    private final UsersRepository usersRepo;
+    @Autowired
+	 private  ProfileRepository profileRepo;
+    @Autowired
+    private UsersServiceInterface usersService;
 
-	    public ProfileService(ProfileRepository profileRepo, UsersRepository usersRepo) {
-	        this.profileRepo = profileRepo;
-	        this.usersRepo = usersRepo;
-	    }
-	
-	@Transactional
-	public Profile saveProfile(ProfileDto profileDto) {
-		// TODO Auto-generated method stub
-		 log.info("Saving a new standalone profile.");
-		Profile profile=new Profile();
-		profile.setGender(profileDto.gender());
-		profile.setAbout(profileDto.about());
-		profile.setContactNumber(profileDto.contactNumber());
-		profile.setDob(profileDto.dob());
-		
-		return profileRepo.save(profile);
-	}
-	
-	
 	@Transactional
 	public UserResponseDto updateProfile(UpdateProfileRequest updateProfile)
-	{ 
+	{
 		log.info("Updating profile for user with email: {}", updateProfile.email());
 
-		Users user = usersRepo.findByEmail(updateProfile.email());
-		
+		Users user = usersService.findByEmail(updateProfile.email()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
 		user.setFirstName(updateProfile.firstName());
 		user.setLastName(updateProfile.lastName());
-		
+
         Profile p = user.getAdditionalDetails();
-		
+
 		if(p == null)
 		{
 			 log.info("No existing profile found. Creating a new one for user: {}", user.getEmail());
-	           
+
 			Profile newProfile = new Profile();
 			newProfile.setAbout(updateProfile.about());
 			newProfile.setContactNumber(updateProfile.contactNumber());
@@ -69,9 +58,9 @@ public class ProfileService {
 			p.setGender(updateProfile.gender());
 		}
 		 log.info("Profile updated successfully for user: {}", user.getEmail());
-	       
+
 		return new UserResponseDto(user);
-		
+
 	}
 
 

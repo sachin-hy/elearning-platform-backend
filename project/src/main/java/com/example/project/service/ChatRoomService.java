@@ -4,7 +4,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.example.project.service.Interface.ChatRoomServiceInterface;
+import com.example.project.service.Interface.UsersServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.project.dto.MessageRequest;
@@ -21,19 +27,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ChatRoomService {
+public class ChatRoomService implements ChatRoomServiceInterface {
+
+    @Autowired
+	private  ChatRoomRepository chatRepo;
+    @Autowired
+    private  MessageRepository messageRepo;
+    @Autowired
+    private UsersServiceInterface usersService;
 	
 	
-	private final ChatRoomRepository chatRepo;
-    private final MessageRepository messageRepo;
-    private final UsersRepository userRepo;
-	
-	
-    public ChatRoomService(ChatRoomRepository chatRepo, MessageRepository messageRepo, UsersRepository userRepo) {
-             this.chatRepo = chatRepo;
-             this.messageRepo = messageRepo;
-             this.userRepo = userRepo;
-         }
     
     
     
@@ -72,20 +75,6 @@ public class ChatRoomService {
 		}).collect(Collectors.toList());
 	}
 
-	
-	
-
-	@Transactional
-	public ChatRoom findById(String roomId) {
-		
-		log.info("Finding chat room by ID: {}", roomId);
-		
-		Long rId = Long.parseLong(roomId);
-		return chatRepo.findById(rId).get();
-		
-		
-	}
-
 
 	@Transactional
 	public Map<String,Object> saveMessage(MessageRequest request,String email) {
@@ -95,13 +84,22 @@ public class ChatRoomService {
 		Long rId = Long.parseLong(request.getRoomId());
 		
 		
-		ChatRoom chatRoom = chatRepo.findById(rId).get();
-		Users user = userRepo.findByEmail(email);
-		
-		if (user == null) {
-			log.warn("User not found for email: {}", email);
-			throw new ResourceNotFoundException("User not found.");
-		}
+		Optional<ChatRoom> cr = chatRepo.findById(rId);
+
+        if(cr.isEmpty())
+        {
+           throw new ResourceNotFoundException("No Chat Room Found .Please Try After Some Time");
+        }
+
+		Optional<Users> u = usersService.findByEmail(email);
+
+        if(u.isEmpty())
+        {
+            throw new UsernameNotFoundException("User not found");
+        }
+        Users user  = u.get();
+        ChatRoom chatRoom = cr.get();
+
 		Message m = new Message();
 		m.setContent(request.getContent());
 		m.setSenderName(user.getFullName());
@@ -111,6 +109,8 @@ public class ChatRoomService {
 		m.addUser(user);
 		m.addChatRoom(chatRoom);
 		Message msg = messageRepo.save(m);
+
+
 		log.info("Message saved successfully with ID: {}");
 		
 		HashMap<String,Object> messageResponse = new HashMap<>();
@@ -143,6 +143,16 @@ public class ChatRoomService {
                 return map;
             })
             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ChatRoom createChatRoom(String courseName,String thumbnail)
+    {
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setRoomName(courseName);
+        chatRoom.setCourseImageUrl(thumbnail);
+
+       return chatRepo.save(chatRoom);
     }
 
 

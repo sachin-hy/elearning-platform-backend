@@ -107,17 +107,11 @@ public class Users implements Serializable {
 	@JsonIgnore
 	private Set<Orders> userOrder = new HashSet<>();
 	
-	
-	
-	
-	
+
 	public String getFullName() {
         return firstName + " " + lastName;
     }
-	
-	
-	
-	
+
 	public void addCourse(Courses c)
 	{
 		 this.courses.add(c);

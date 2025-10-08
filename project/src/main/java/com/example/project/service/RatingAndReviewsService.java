@@ -2,6 +2,11 @@ package com.example.project.service;
 
 
 
+import com.example.project.service.Interface.CourseServiceInterface;
+import com.example.project.service.Interface.RatingAndReviewsServiceInterface;
+import com.example.project.service.Interface.UsersServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,21 +23,21 @@ import com.example.project.repository.UsersRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
-public class RatingAndReviewsService {
+public class RatingAndReviewsService implements RatingAndReviewsServiceInterface {
 
-	
-	 private final RatingAndReviewsRepository ratingRepo;
-	    private final UsersRepository userRepo;
-	    private final CourseRepository courseRepo;
 
-	    public RatingAndReviewsService(RatingAndReviewsRepository ratingRepo, UsersRepository userRepo, CourseRepository courseRepo) {
-	        this.ratingRepo = ratingRepo;
-	        this.userRepo = userRepo;
-	        this.courseRepo = courseRepo;
-	    }
-	
+        @Autowired
+	    private  RatingAndReviewsRepository ratingRepo;
+        @Autowired
+	    private UsersServiceInterface usersService;
+        @Autowired
+	    private CourseServiceInterface courseService;
+
+
 	    
 	    
 	    
@@ -43,17 +48,14 @@ public class RatingAndReviewsService {
 	   
 		log.info("Attempting to save a rating for user {} on course ID {}", email, courseId);
         
-	    Users user = userRepo.findByEmail(email);
+	    Users user = usersService.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("USer not found"));
 	       
-	    if (user == null) {
-            log.warn("Rating failed: User not found with email: {}", email);
-            throw new ResourceNotFoundException("User not found.");
-        }
-	    Courses course = courseRepo.findById(courseId)
-	        .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + courseId));
+
+	    Courses course = courseService.findById(courseId);
+	       // .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + courseId));
 
 	   
-	    boolean isEnrolled = userRepo.existsByUseridAndCoursesCourseid(user.getUserid(), courseId);
+	    boolean isEnrolled = usersService.existsByUseridAndCoursesCourseid(user.getUserid(), courseId);
 	    
 	    if (!isEnrolled) {
 	    	log.warn("Rating failed: User {} is not enrolled in course ID {}", email, courseId);

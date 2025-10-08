@@ -2,6 +2,9 @@ package com.example.project.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import com.example.project.service.Interface.OTPSchemaServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,20 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class OTPSchemaService {
-	
-	private final OtpSchemaRepository otpRepo;
+public class OTPSchemaService implements OTPSchemaServiceInterface {
 
-    public OTPSchemaService(OtpSchemaRepository otpRepo) {
-        this.otpRepo = otpRepo;
-    }
-	
-	@Transactional
-	public Optional<OTPSchema> findByotp(String otp)
-	{
-		log.info("Finding OTP by value: {}", otp);
-		return otpRepo.findByotp(otp);
-	}
+    @Autowired
+	private  OtpSchemaRepository otpRepo;
 
 
 	@Transactional

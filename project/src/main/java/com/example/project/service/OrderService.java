@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.example.project.service.Interface.OrderServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class OrderService {
-	
-	
-	 private final OrdersRepository ordersRepo;
+public class OrderService implements OrderServiceInterface {
 
-	    public OrderService(OrdersRepository ordersRepo) {
-	        this.ordersRepo = ordersRepo;
-	    }
-	
+
+    @Autowired
+	 private  OrdersRepository ordersRepo;
+
+	   
 	
 	
 	@Transactional

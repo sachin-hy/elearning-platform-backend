@@ -3,13 +3,18 @@ package com.example.project.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.project.exception.ResourceNotFoundException;
+import com.example.project.service.Interface.UsersServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,39 +36,23 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class UsersService {
+public class UsersService implements UsersServiceInterface {
 
-	private final UsersRepository userRepo;
-    private final AuthenticationManager authManager;
-    private final SecurityCustomDetailService securityCustomDetailService;
-    private final JwtUtil jwtUtil;
+    @Autowired
+	private  UsersRepository userRepo;
+    @Autowired
+    private  AuthenticationManager authManager;
+    @Autowired
+    private  SecurityCustomDetailService securityCustomDetailService;
+    @Autowired
+    private  JwtUtil jwtUtil;
 
-    public UsersService(UsersRepository userRepo, AuthenticationManager authManager,
-                        SecurityCustomDetailService securityCustomDetailService, JwtUtil jwtUtil) {
-        this.userRepo = userRepo;
-        this.authManager = authManager;
-        this.securityCustomDetailService = securityCustomDetailService;
-        this.jwtUtil = jwtUtil;
-    }
+
     
-    
-    
-    
-	@Transactional
-	public UserResponseDto findUserByEmail(String email)
-	{
-		log.info("Finding user by email: {}", email);
-	       
-		Users user = userRepo.findByEmail(email);
-		
-		return new UserResponseDto(user);
-		
-		
-	}
 
 
 	@Transactional
-	public Users findByEmail(String email)
+	public Optional<Users> findByEmail(String email)
 	{
 		 log.info("Finding user entity by email: {}", email);
 	       
@@ -101,21 +90,6 @@ public class UsersService {
 	}
 
 
-
-	@Transactional
-	
-	public void deleteByEmail(String email) {
-		// TODO Auto-generated method stub
-		log.info("Deleting user with email: {}", email);
-	       
-		userRepo.deleteByEmail(email);
-	}
-
-
-
-
-
-
 	@Transactional
 	public List<CourseResponseDto> findCoursesEnrolled(String email) {
 		// TODO Auto-generated method stub
@@ -133,7 +107,7 @@ public class UsersService {
 		// TODO Auto-generated method stub
     	log.info("Setting password reset token for user: {}", email);
         
-    	Users user = userRepo.findByEmail(email);
+         Users user = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 		 user.setToken(token);
 	     user.setResetPasswordExpires(LocalDateTime.now().plusMinutes(10));
 	}
@@ -171,20 +145,44 @@ public class UsersService {
 				
 				
 			
-				Users user = userRepo.findByEmail(email);
-			
-				UserResponseDto u = new UserResponseDto(user);
-				
-				res = new LoginResponseDto(u,jwt);
-				
-			
+				Optional<Users> user = userRepo.findByEmail(email);
+
+                if(user.isPresent())
+                {
+                    UserResponseDto u = new UserResponseDto(user.get());
+
+                    res = new LoginResponseDto(u,jwt);
+
+                }else{
+                     throw new UsernameNotFoundException("User not found");
+                }
+
 			}
 			
 			return res;
 			
      }
 
+     @Transactional
+    @Override
+    public boolean existsByUseridAndCourses_Courseid(Long userid, long courseId) {
+        return userRepo.existsByUseridAndCourses_Courseid(userid,courseId);
+    }
 
-	
-	
+    @Override
+    public boolean existsByUseridAndCoursesCourseid(Long userid, Long courseId) {
+        return userRepo.existsByUseridAndCoursesCourseid(userid,courseId);
+    }
+
+    @Override
+    public boolean existByEmail(String email) {
+        return userRepo.existByEmail(email);
+    }
+
+    @Override
+    public void save(Users user) {
+        userRepo.save(user);
+    }
+
+
 }

@@ -7,9 +7,4 @@ import com.example.project.entity.SubSection;
 @Repository
 public interface SubSectionRepository extends JpaRepository<SubSection,Long>{
 
-
-
-	
-
-
 }

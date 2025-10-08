@@ -1,6 +1,7 @@
 package com.example.project.controller;
 
 
+import com.example.project.service.Interface.UsersServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/auth")
 @Slf4j
 public class LoginController {
-  
-	
-	 private final UsersService usersService;
 
-	 public LoginController(UsersService usersService) {
-	        this.usersService = usersService;
-	 }
-	
-	 
+
+    @Autowired
+	 private UsersServiceInterface usersService;
+
+
 	 
 	@PostMapping("/login")
 	public ResponseEntity<?> login( @Valid @RequestBody LoginDto logindto,HttpServletRequest request)

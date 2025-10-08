@@ -1,6 +1,10 @@
 package com.example.project.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+
+import com.example.project.service.Interface.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.project.dto.OrderResponse;
 import com.example.project.dto.PaymentVerificationRequest;
@@ -13,8 +17,6 @@ import com.example.project.exception.BadRequestException;
 import com.example.project.exception.ConflictException;
 import com.example.project.exception.InternalServerError;
 import com.example.project.exception.ResourceNotFoundException;
-import com.example.project.repository.CourseRepository;
-import com.example.project.repository.UsersRepository;
 import com.razorpay.Order;
 
 import jakarta.transaction.Transactional;
@@ -22,23 +24,19 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j 
 @Service
-public class PaymentService {
+public class PaymentService implements PaymentServiceInterface{
 
-	private final UsersRepository userRepo;
-    private final RazorpayService razorpayService;
-    private final CourseRepository courseRepo;
-    private final OrderService orderService;
-    private final EmailService emailService;
+    @Autowired
+	private UsersServiceInterface userService;
+    @Autowired
+    private RazorpayServiceInterface razorpayService;
+    @Autowired
+    private CourseServiceInterface courseService;
+    @Autowired
+    private OrderServiceInterface orderService;
+    @Autowired
+    private EmailServiceInterface emailService;
 
-    public PaymentService(UsersRepository userRepo, RazorpayService razorpayService, CourseRepository courseRepo,
-                          OrderService orderService, EmailService emailService) {
-        this.userRepo = userRepo;
-        this.razorpayService = razorpayService;
-        this.courseRepo = courseRepo;
-        this.orderService = orderService;
-        this.emailService = emailService;
-    }
-    
     
     
     
@@ -62,17 +60,19 @@ public class PaymentService {
              throw new NumberFormatException();
          }
          
-         Users user = userRepo.findByEmail(email);
+         Optional<Users> u = userService.findByEmail(email);
 		 
-         if (user == null) {
+         if (u.isEmpty()) {
              log.error("User not found for email: {}", email);
              throw new ResourceNotFoundException("User not found with email: " + email);
          }
+
+         Users user = u.get();
          
-         Courses course = courseRepo.findById(courseId)
-        		    .orElseThrow(() -> new ResourceNotFoundException("Course Not Found! Try Again"));
+         Courses course = courseService.findById(courseId);
+        		    //.orElseThrow(() -> new ResourceNotFoundException("Course Not Found! Try Again"));
          
-         if (userRepo.existsByUseridAndCourses_Courseid(user.getUserid(), courseId)) {
+         if (userService.existsByUseridAndCourses_Courseid(user.getUserid(), courseId)) {
         	   log.info("User {} already purchased course {}", email, courseId);
         	    throw new ConflictException("You have already purchased this course.");
         	}

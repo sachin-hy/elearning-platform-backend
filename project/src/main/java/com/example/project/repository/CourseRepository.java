@@ -19,29 +19,10 @@ public interface CourseRepository extends JpaRepository<Courses,Long> {
 	
 	Page<Courses> findAll(Pageable pageable);
 
-	@Query("SELECT DISTINCT u FROM Courses c JOIN c.studentsEnrolled u WHERE c.courseid = :courseId AND u = :user")
-	Users isUserEnrolled(@Param("user") Users user, @Param("courseId") Long courseId);
+    Long countByCategory(Category category);
 
-	@Query("SELECT DISTINCT c FROM Courses c " +
-		       "JOIN c.studentsEnrolled u " +
-		       "WHERE c.courseid = :courseId AND u = :user")
-	Courses findCourseByEnrolledUser(
-		    @Param("user") Users user, 
-		    @Param("courseId") Long courseId
-		);
-	
-	Page<Courses> findByCategory(Category category, Pageable pageable);
+    @Query("Select c from Courses c where c.instructor = :instructor")
+    List<Courses> findAllByInstructor(@Param("instructor") Users instructor);
 
-	Long countByCategory(Category category);
-
-	@Query("select c.chatRoom from Courses c where c.courseid = :courseId")
-	ChatRoom findChatRoomById(@Param("courseId") Long courseId);
-
-	@Query("Select c from Courses c where c.instructor = :instructor")
-	List<Courses> findAllByInstructor(@Param("instructor") Users instructor);
-
-	
-
-	
 	
 }

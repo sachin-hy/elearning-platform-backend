@@ -1,5 +1,7 @@
 package com.example.project.controller;
 
+import com.example.project.service.Interface.SectionServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,12 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SectionController {
 
-	 private final SectionService sectionService;
+    @Autowired
+	 private SectionServiceInterface sectionService;
 
-	    public SectionController(SectionService sectionService) {
-	        this.sectionService = sectionService;
-	    }
-	
+
 	
 	@PostMapping("/create-section")
 	public ResponseEntity<?> createSection(@Valid @RequestBody SectionDto sectionDto)

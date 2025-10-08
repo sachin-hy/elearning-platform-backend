@@ -4,11 +4,18 @@ package com.example.project.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.project.service.Interface.CategoryServiceInterface;
+import com.example.project.service.Interface.ChatRoomServiceInterface;
+import com.example.project.service.Interface.CourseServiceInterface;
+import com.example.project.service.Interface.UsersServiceInterface;
 import org.apache.tika.Tika;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import org.springframework.stereotype.Service;
@@ -34,27 +41,20 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class CourseService {
-	
-	
-	private final ImageUploader imageUploader;
-    private final CourseRepository courseRepo;
-    private final UsersRepository userRepo;
-    private final CategoryRepository categoryRepo;
-    private final ChatRoomRepository chatRoomRepo;
-    private final Tika tika;
+public class CourseService implements CourseServiceInterface {
 
-    public CourseService(ImageUploader imageUploader, CourseRepository courseRepo, UsersRepository userRepo,
-                         CategoryRepository categoryRepo, ChatRoomRepository chatRoomRepo, Tika tika) {
-        this.imageUploader = imageUploader;
-        this.courseRepo = courseRepo;
-        this.userRepo = userRepo;
-        this.categoryRepo = categoryRepo;
-        this.chatRoomRepo = chatRoomRepo;
-        this.tika = tika;
-    }
-    
-    
+    @Autowired
+	private  ImageUploader imageUploader;
+    @Autowired
+    private  CourseRepository courseRepo;
+    @Autowired
+    private UsersServiceInterface usersService;
+    @Autowired
+    private CategoryServiceInterface categoryService;
+    @Autowired
+    private  Tika tika;
+    @Autowired
+    private ChatRoomServiceInterface chatRoomService;
     
     
 	
@@ -88,32 +88,23 @@ public class CourseService {
 	    log.info("File successfully uploaded to Cloudinary: {}", thumbnailImage);
 
 	   //Get Instrucotre
-		Users instructor = userRepo.findByEmail(email);
-		if (instructor == null) {
-            log.warn("Instructor not found with email: {}", email);
-            throw new ResourceNotFoundException("Instructor not found.");
-        }
+		Users instructor = usersService.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Instructor not found."));
+                //userRepo.findByEmail(email)
+
+
 		//check valid course id
 		Long cid =0l;
 		try {
 			cid = Long.parseLong(courseDto.category());
 		}catch(NumberFormatException e)
-		
 		{
 			 log.warn("Invalid category ID format: {}", courseDto.category());
-	           
 			throw new NumberFormatException("Enter Valid Category");
 		}
 		
 		//get category of the course using the category id
-		Category c = categoryRepo.findById(cid).get();
-		
-		
-		if(c == null)
-		{
-			throw new ResourceNotFoundException("Enter valid Category Type");
-		}
-		
+		Category category = categoryService.findById(cid).orElseThrow(() ->  new ResourceNotFoundException("Enter valid Category Type"));
+
 		//create new course
 		Courses course =new Courses();
 		course.setCourseName(courseDto.courseName());
@@ -123,9 +114,10 @@ public class CourseService {
         course.setThumbnail(thumbnailImage);
         course.setCreatedAt(LocalDateTime.now());
         course.setTag(courseDto.tag());
-        
+
+
         course.addInstructor(instructor);
-        course.addCategory(c);
+        course.addCategory(category);
         
         
         //save course
@@ -133,14 +125,9 @@ public class CourseService {
         
         log.info("Course saved successfully with ID: {}", co.getCourseid());
 
-        //create chatroom for the course
-        ChatRoom chatRoom = new ChatRoom();
-		chatRoom.setRoomName(courseDto.courseName());
-		chatRoom.setCourseImageUrl(thumbnailImage);
-	   
 		//save chatroom
-		ChatRoom ch = chatRoomRepo.save(chatRoom);
-		
+		ChatRoom ch = chatRoomService.createChatRoom(courseDto.courseName(),thumbnailImage);
+
 		//add instructor to chatrom
 		instructor.addChatRoom(ch);
         
@@ -153,80 +140,6 @@ public class CourseService {
 	}
 
 
-
-	
-
-	
-	@Transactional
-	public CourseResponseDto getCourseById(Long courseid) {
-		// TODO Auto-generated method stub
-		log.info("Fetching course by ID: {}", courseid);
-        
-		 Courses course = courseRepo.findById(courseid).get();
-		 return new CourseResponseDto(course);
-	}
-
-	@Transactional
-	public Courses findById(Long courseid)
-	{
-		 log.info("Finding course by ID: {}", courseid);
-	       
-		return courseRepo.findById(courseid).get();
-	}
-	
-	
-	@Transactional
-	public boolean getUserEnrolled(Users user,Long courseid) {
-		log.info("Checking if user {} is enrolled in course ID: {}", user.getEmail(), courseid);
-        
-	
-		Users u =  courseRepo.isUserEnrolled(user,courseid);
-		
-		if(u == null)
-		{
-			return false;
-		}
-		else {
-			return true;
-		}
-		
-	}
-
-	@Transactional
-	public Courses getCourseAndCheckUserEnrolled(Users user, Long courseid) {
-		// TODO Auto-generated method stub
-		log.info("Fetching course ID {} and checking enrollment for user {}", courseid, user.getEmail());
-        
-		return courseRepo.findCourseByEnrolledUser(user,courseid);
-	}
-
-
-   
-	 
-	@Transactional
-	public List<CourseResponseDto> getByCategory(Category category,Pageable pageable) {
-		 log.info("Fetching courses by category: {} on page {}", category.getName(), pageable.getPageNumber());
-	       
-		
-		Page<Courses> page = courseRepo.findByCategory(category, pageable);
-		
-		log.info("Found {} courses in category {}.", page.getTotalElements(), category.getName());
-	       
-		return convert(page);
-	}
-
-
-	@Transactional
-	public List<CourseResponseDto> getAll(Pageable pageable) {
-		// TODO Auto-generated method stub
-	    
-		 log.info("Fetching all courses on page {}", pageable.getPageNumber());
-	       
-		Page<Courses> page = courseRepo.findAll(pageable);
-		 log.info("Found {} courses in total.", page.getTotalElements());
-	       
-	     return convert(page);  
-	}
 
 
 
@@ -277,15 +190,6 @@ public class CourseService {
 
 
 
-	@Transactional
-	public List<CourseResponseDto> convert(Page<Courses> page)
-	{
-		 return page.map(course -> new CourseResponseDto(course)).getContent();
-	}
-
-
-
-
 
 
 
@@ -296,14 +200,16 @@ public class CourseService {
 		
 		log.info("Fetching courses for instructor with email: {}", email);
         
-		Users instructor = userRepo.findByEmail(email);
-		if(instructor == null)
+		Optional<Users> i = usersService.findByEmail(email);
+		if(i.isEmpty())
 		{
 			log.warn("Instructor not found with email: {}", email);
             
 			throw new ResourceNotFoundException("Enter a Valid Instructor Id");
 		}
-		
+
+        Users instructor = i.get();
+
 		List<Courses> list = courseRepo.findAllByInstructor(instructor);
 		
 		log.info("Found {} courses for instructor {}.", list.size(), email);
@@ -325,11 +231,42 @@ public class CourseService {
 		{
 		    return courseRepo.count();
 		}else {
-			Category category = categoryRepo.findByName(type);
-			return courseRepo.countByCategory(category);
+			Category category = categoryService.findByName(type).orElseThrow(() -> new ResourceNotFoundException("Category Not Found"));
+
+            return courseRepo.countByCategory(category);
 		}
 		
 	}
-	
+
+    @Override
+    public Courses findById(Long id) {
+         Courses c = courseRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("No course Present With Id"));
+
+          return c;
+    }
+
+    @Override
+    public void save(Courses course) {
+        courseRepo.save(course);
+    }
+
+    @Override
+    public List<CourseResponseDto> findAllCourses(String page) {
+        int p = 0;
+
+        try {
+            p = Integer.parseInt(page);
+        }catch(NumberFormatException e)
+        {
+
+            throw new NumberFormatException("Enter Valid Page Number");
+        }
+
+        Pageable pageable = PageRequest.of(p, 2);
+
+        Page<Courses> pa = courseRepo.findAll(pageable);
+
+        return pa.map(course -> new CourseResponseDto(course)).getContent();
+    }
 
 }

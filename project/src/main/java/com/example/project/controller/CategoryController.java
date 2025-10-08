@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.example.project.service.CourseService;
+import com.example.project.service.Interface.CategoryServiceInterface;
+import com.example.project.service.Interface.CourseServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,15 +32,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CategoryController {
 
-	
-	private final CategoryService categoryService;
-	
-	
-	public CategoryController(CategoryService categoryService)
-	{
-		this.categoryService=categoryService;
-	}
-	
+    @Autowired
+	private CategoryServiceInterface categoryService;
+	@Autowired
+    private CourseServiceInterface courseService;
+
+
+
+
 	
 	
 	@PostMapping
@@ -79,13 +81,20 @@ public class CategoryController {
 	}
 	
 	@GetMapping("/{type}/courses")
-	public ResponseEntity<?> getCourseByCategory(@PathVariable String type,@RequestParam("page")  String page)   
-	{
+	public ResponseEntity<?> getCourseByCategory(@PathVariable String type,@RequestParam("page")  String page)  {
+
+
+        if(!type.equals("All")) {
+            List<CourseResponseDto> list = categoryService.getByCategory(type, page);
+            return new ResponseEntity<>(list,HttpStatus.OK);
+
+        }else{
+            List<CourseResponseDto> list = courseService.findAllCourses(page);
+
+            return new ResponseEntity<>(list,HttpStatus.OK);
+        }
 		
-		List<CourseResponseDto> list = categoryService.getByCategory(type,page);
-		
-		
-		return new ResponseEntity<>(list,HttpStatus.OK);
+
 	}
 	
 	

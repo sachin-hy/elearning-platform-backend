@@ -1,6 +1,7 @@
 package com.example.project.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,10 +17,8 @@ import com.example.project.entity.Users;
 @Repository
 public interface UsersRepository extends JpaRepository<Users,Long>{
 
-	
-	Users findByEmail(String email);
+	Optional<Users> findByEmail(String email);
 
-	
 	String findPasswordByEmail(String email);
 
 	@Modifying
@@ -28,27 +27,12 @@ public interface UsersRepository extends JpaRepository<Users,Long>{
 
 	Users findByToken(String token);
 
-	@Modifying
-	@Query("UPDATE Users u SET u.additionalDetails = :additionalDetails WHERE u.email = :email")
-	void updateProfileByEmail(@Param("email") String email, @Param("additionalDetails") Profile additionalDetails);
 
 	void deleteByEmail(String email);
 
-	@Modifying
-	@Query("UPDATE Users u SET u.courses = :courses WHERE u.email = :email")
-	void updateCoursesById(@Param("email") String email,@Param("courses") List<Courses> courses);
-
-
-	@Query("SELECT u.instructorCourses FROM Users u WHERE u.email = :email")
-	List<Courses> findInstructorCoursesByEmail(@Param("email") String email);
  
 	@Query("SELECT u.courses FROM Users u WHERE u.email = :email")
 	List<Courses> findCoursesEnrolled(@Param("email") String email);
-
-
-	@Query("SELECT u.chatRoom FROM Users u WHERE u.email = :email")
-	List<ChatRoom> findChatRoomsByEmail(@Param("email") String email);
-
 
 	boolean existsByUseridAndCoursesCourseid(Long userid, Long courseId);
 
@@ -57,4 +41,6 @@ public interface UsersRepository extends JpaRepository<Users,Long>{
 
 
 	boolean existsByUseridAndCourses_Courseid(Long userid, long courseId);
-	}
+
+
+}

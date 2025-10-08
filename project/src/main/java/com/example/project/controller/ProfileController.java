@@ -1,6 +1,8 @@
 package com.example.project.controller;
 
 
+import com.example.project.service.Interface.ProfileServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,15 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProfileController {
 
-	private final ProfileService profileService;
+    @Autowired
+	private ProfileServiceInterface profileService;
 
-    public ProfileController(ProfileService profileService) {
-        this.profileService = profileService;
-    }
+
 	
 	
-	
-	
+
 	
 	@PutMapping("/update-profile")
 	public ResponseEntity<UserResponseDto> updateProfile(@Valid @RequestBody UpdateProfileRequest updateProfile){

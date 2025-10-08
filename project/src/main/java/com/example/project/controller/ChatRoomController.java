@@ -5,6 +5,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+import com.example.project.service.Interface.ChatRoomServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,15 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ChatRoomController {
 
-	private final ChatRoomService chatRoomService;
+    @Autowired
+	private ChatRoomServiceInterface chatRoomService;
 	
 	
 	
-	public ChatRoomController(ChatRoomService chatRoomService)
-	{
-		this.chatRoomService = chatRoomService;
-		
-	}
+
 	
    
 	@PostMapping("/history/chatroom")

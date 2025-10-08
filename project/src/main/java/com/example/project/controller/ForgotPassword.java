@@ -4,10 +4,13 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import com.example.project.service.Interface.EmailServiceInterface;
+import com.example.project.service.Interface.UsersServiceInterface;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,9 +34,9 @@ import jakarta.validation.Valid;
 public class ForgotPassword {
 
 	@Autowired
-	private UsersService usersService;
+	private UsersServiceInterface usersService;
 	@Autowired
-	private EmailService emailService;
+	private EmailServiceInterface emailService;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
@@ -47,7 +50,7 @@ public class ForgotPassword {
 			//get email
 			
 			//check user for this email 
-			Users user = usersService.findByEmail(email);
+			Users user = usersService.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User Not Found With Email"));
 			
 			if(user == null)
 			{

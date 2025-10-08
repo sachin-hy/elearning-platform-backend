@@ -1,5 +1,9 @@
 package com.example.project.service;
 
+import com.example.project.service.Interface.ChangePasswordServiceInterface;
+import com.example.project.service.Interface.EmailServiceInterface;
+import com.example.project.service.Interface.UsersServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,26 +16,17 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ChangePasswordService {
-	
-	private final UsersService usersService;
-	private final EmailService emailService;
-	private final PasswordEncoder passwordEncoder;
-	
-	public ChangePasswordService(UsersService usersService,  
-			                     EmailService emailService,
-			                     PasswordEncoder passwordEncoder)
-	{
-		this.emailService = emailService;
-		this.usersService = usersService;
-		this.passwordEncoder = passwordEncoder;
-	}
+public class ChangePasswordService implements ChangePasswordServiceInterface {
 
-	
-	
-	
-	
-	
+
+
+	@Autowired
+	private UsersServiceInterface usersService;
+    @Autowired
+	private EmailServiceInterface emailService;
+    @Autowired
+	private  PasswordEncoder passwordEncoder;
+
 	
 	@Transactional
 	public void updatePassword(RequestPasswordUpdateDto passwordDto,String email)

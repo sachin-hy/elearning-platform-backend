@@ -2,6 +2,7 @@ package com.example.project.controller;
 
 import java.security.Principal;
 
+import com.example.project.service.Interface.RatingAndReviewsServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RatingAndReviewController {
 
-	private final RatingAndReviewsService ratingService;
+    @Autowired
+	private RatingAndReviewsServiceInterface ratingService;
 
-    public RatingAndReviewController(RatingAndReviewsService ratingService) {
-        this.ratingService = ratingService;
-    }
 
-	
 	
 	
 	//create Rating

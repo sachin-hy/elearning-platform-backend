@@ -2,6 +2,7 @@ package com.example.project.controller;
 
 import java.util.Map;
 
+import com.example.project.service.Interface.ChatRoomServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,7 +20,7 @@ import jakarta.validation.Valid;
 public class ChatController {
 
 	@Autowired
-	private ChatRoomService chatRoomService;
+	private ChatRoomServiceInterface chatRoomService;
 	
 	@Autowired
 	private SimpMessagingTemplate messagingTemplate;

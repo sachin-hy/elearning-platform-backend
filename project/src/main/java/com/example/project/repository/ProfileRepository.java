@@ -10,8 +10,4 @@ import com.example.project.entity.Profile;
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile,Long> {
 
-
-
-	
-	
 }

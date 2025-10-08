@@ -2,7 +2,11 @@ package com.example.project.service;
 
 import java.time.LocalDateTime;
 
+import com.example.project.service.Interface.OTPSchemaServiceInterface;
+import com.example.project.service.Interface.SignUpServiceInterface;
+import com.example.project.service.Interface.UsersServiceInterface;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,20 +24,17 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class SignUpService {
+public class SignUpService implements SignUpServiceInterface {
 
-	private final EmailService emailService;
-    private final UsersRepository userRepo;
-    private final OTPSchemaService otpSchemaService;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+	private  EmailService emailService;
+    @Autowired
+    private UsersServiceInterface userService;
+    @Autowired
+    private OTPSchemaServiceInterface otpSchemaService;
+    @Autowired
+    private  PasswordEncoder passwordEncoder;
 
-    public SignUpService(EmailService emailService, UsersRepository userRepo,
-                         OTPSchemaService otpSchemaService, PasswordEncoder passwordEncoder) {
-        this.emailService = emailService;
-        this.userRepo = userRepo;
-        this.otpSchemaService = otpSchemaService;
-        this.passwordEncoder = passwordEncoder;
-    }
     
     
 	
@@ -42,7 +43,7 @@ public class SignUpService {
 	{
 		log.info("Attempting to save new user with email: {}", signupdto.email());
 		
-		if(userRepo.existByEmail(signupdto.email()))
+		if(userService.existByEmail(signupdto.email()))
 		{
 			log.warn("Sign-up failed: User already exists with email: {}", signupdto.email());
 			
@@ -71,9 +72,9 @@ public class SignUpService {
 	    user.setLastName(signupdto.lastName());
 	    user.setEmail(signupdto.email());
 	    user.setPassword(passwordEncoder.encode(signupdto.password()));
-	    user.setAccountType(null);
+
 	    user.setAccountType(AccountType.valueOf(signupdto.accountType()));
-	    userRepo.save(user);
+        userService.save(user);
 
 	    log.info("New user successfully created with email: {}", signupdto.email());
 		
@@ -85,7 +86,7 @@ public class SignUpService {
 	{
 		log.info("Attempting to send OTP to email: {}", email);
 		
-		if(userRepo.existByEmail(email))
+		if(userService.existByEmail(email))
 		{
 			log.warn("OTP request failed: User already exists with email: {}", email);
 			
@@ -94,7 +95,7 @@ public class SignUpService {
 		
 		String otp = RandomStringUtils.randomNumeric(6);
 		
-		System.out.println(otp);
+
 		try {
 		  emailService.sendEmail(email, "otp verification email", otp);
 		  log.info("OTP email sent successfully to: {}", email);

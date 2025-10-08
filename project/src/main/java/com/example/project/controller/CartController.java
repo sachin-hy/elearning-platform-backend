@@ -4,6 +4,8 @@ import java.security.Principal;
 import java.util.List;
 
 
+import com.example.project.service.Interface.CartServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 public class CartController {
- 
-	private final CartService cartService;
+
+    @Autowired
+	private CartServiceInterface cartService;
 	
-	public CartController(CartService cartService)
-	{
-		this.cartService =cartService;
-	}
-	
+
 	@GetMapping("/cart")
 	public ResponseEntity<?> cart(@RequestParam("page") String page, Principal principal)
 	{

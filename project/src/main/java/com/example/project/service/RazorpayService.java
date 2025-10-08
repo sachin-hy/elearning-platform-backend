@@ -2,7 +2,10 @@ package com.example.project.service;
 
 import java.time.LocalDateTime;
 
+
+import com.example.project.service.Interface.RazorpayServiceInterface;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class RazorpayService {
+public class RazorpayService implements RazorpayServiceInterface {
 
 	    @Value("${razorpay.key_id}")
 	    private String keyId;
 	    @Value("${razorpay.key_secret}")
 	    private String keySecret;
 
-	    private final RazorpayClient razorpayClient;
+        @Autowired
+	    private  RazorpayClient razorpayClient;
 
-	    public RazorpayService(RazorpayClient razorpayClient) {
-	        this.razorpayClient = razorpayClient;
-	    }
-	
+
 	    
 	@Transactional    
 	public Order createRazorpayOrder(Long courseid,int coursePrice, String email) throws Exception {

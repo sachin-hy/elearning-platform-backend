@@ -23,7 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
 	 public void registerStompEndpoints(StompEndpointRegistry registry) {
 	        // Endpoint for clients to connect
 	        registry.addEndpoint("/chat")
-	                .setAllowedOriginPatterns("https://elearning-platform-frontend-rho.vercel.app")
+	                .setAllowedOriginPatterns("https://elearning-platform-frontend-rho.vercel.app")  //http://localhost:3000
 	                .withSockJS(); 
 	    }
 	

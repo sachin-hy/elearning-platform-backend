@@ -1,6 +1,8 @@
 package com.example.project.service;
 
 
+import com.example.project.service.Interface.CourseServiceInterface;
+import com.example.project.service.Interface.SectionServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,18 +18,18 @@ import com.example.project.repository.SectionRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 
 @Service
 @Slf4j
-public class SectionService {
+public class SectionService implements SectionServiceInterface {
 
-	private final SectionRepository sectionRepo;
-    private final CourseRepository courseRepo;
+    @Autowired
+	private  SectionRepository sectionRepo;
+    @Autowired
+    private CourseServiceInterface courseService;
 
-    public SectionService(SectionRepository sectionRepo, CourseRepository courseRepo) {
-        this.sectionRepo = sectionRepo;
-        this.courseRepo = courseRepo;
-    }
 	
 	
 	@Transactional
@@ -46,14 +48,14 @@ public class SectionService {
 			throw new NumberFormatException("Enter valid courseid");
 		}
 		
-		Courses course = courseRepo.findById(cid).get();
+		Courses course = courseService.findById(cid);
 	
 		Section section = new Section();
 		section.setSectionName(sectionDto.sectionName());
 		
 		course.addSection(section);
 
-		courseRepo.save(course);
+        courseService.save(course);
 		log.info("Section '{}' saved successfully for course ID: {}", sectionDto.sectionName(), cid);
         
 	
@@ -62,21 +64,7 @@ public class SectionService {
 	}
 
 	
-	
-	
-	@Transactional
-	public SectionResponseDto findByIdAndUpdate(Long sectionid,String sectionName) {
-		// TODO Auto-generated method stub
-		log.info("Updating section ID: {} to new name: {}", sectionid, sectionName);
-        
-		Section section = sectionRepo.updateSectionNameById(sectionid,sectionName);
-		
-		  log.info("Section ID: {} updated successfully.", sectionid);
-	      
-		return new SectionResponseDto(section);
-	}
-
-	@Transactional
+		@Transactional
 	public void deleteByid(String sectionid) {
 		// TODO Auto-generated method stub
 		
@@ -108,35 +96,19 @@ public class SectionService {
 		
 	}
 
-	@Transactional
-	public SectionResponseDto findByIdAndAddInSection(Long sectionid,SubSection subsection) {
-		// TODO Auto-generated method stub
-		
-		 log.info("Adding sub-section with ID: {} to section ID: {}", subsection.getId(), sectionid);
+    @Override
+    public boolean existsById(Long sectionid) {
+        return sectionRepo.existsById(sectionid);
+    }
 
-		Section section = sectionRepo.findById(sectionid).get();
-		section.getSubSection().add(subsection);
-		log.info("Sub-section added to section ID: {}", sectionid);
-        
-		return new SectionResponseDto(section);
-	}
+    @Override
+    public Optional<Section> findById(Long sectionid) {
+        return sectionRepo.findById(sectionid);
+    }
 
+    @Override
+    public void save(Section section) {
+        sectionRepo.save(section);
+    }
 
-	
-	@Transactional
-	public Section findById(Long sectionId)
-	{
-		 log.info("Finding section by ID: {}", sectionId);
-		return sectionRepo.findById(sectionId).get();
-		
-		
-	}
-
-	@Transactional
-	public boolean existById(Long sectionid) {
-		// TODO Auto-generated method stub
-		log.info("Checking for existence of section with ID: {}", sectionid);
-	       
-		return sectionRepo.existsById(sectionid);
-	}
 }

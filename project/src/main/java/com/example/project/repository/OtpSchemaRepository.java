@@ -12,8 +12,9 @@ import com.example.project.entity.OTPSchema;
 @Repository
 public interface OtpSchemaRepository extends JpaRepository<OTPSchema,Long>{
 
-	Optional<OTPSchema> findByotp(String otp);
+
     
 	@Query(nativeQuery = true,value = "SELECT * FROM otpschema o WHERE o.email = :email AND o.expired_at > CURRENT_TIMESTAMP ORDER BY o.created_at DESC LIMIT 1 ")
 	OTPSchema findByemail(String email);
+
 }

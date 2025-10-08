@@ -8,8 +8,11 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -94,11 +97,38 @@ public class GlobalApiExceptionHandler {
 	         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	    }
 	    
-	    
+	    @ExceptionHandler(Exception.class)
+        public ResponseEntity<ErrorResponse> handleException(Exception ex){
+             log.error("Exception occured = " , ex.getMessage());
+             ErrorResponse error = new ErrorResponse("We Are Facing Some Problem Please Try Later", HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now());
+             return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
 	    @ExceptionHandler(IllegalArgumentException.class)
 	    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
 	        log.warn("Invalid request data: {}", ex.getMessage(), ex);
 	        ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	    }
+
+        @ExceptionHandler(UsernameNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+
+         log.error("Username not found: {}", ex.getMessage(), ex);
+         ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, LocalDateTime.now());
+         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
+        @ExceptionHandler(AuthenticationException.class)
+        public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+            log.error("User is unAuntheciated with user id " + ex.getMessage());
+
+            ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED, LocalDateTime.now());
+            return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+        }
+//        {
+//
+//
+//        }
 }

@@ -27,13 +27,12 @@ import org.springframework.util.AntPathMatcher;
 @Component
 public class JwtFilter extends OncePerRequestFilter{
 
-	 private final SecurityCustomDetailService securityCustomDetailService;
-	    private final JwtUtil jwtUtil;
+    @Autowired
+    private  SecurityCustomDetailService securityCustomDetailService;
+    @Autowired
+    private  JwtUtil jwtUtil;
 
-	    public JwtFilter(SecurityCustomDetailService securityCustomDetailService, JwtUtil jwtUtil) {
-	        this.securityCustomDetailService = securityCustomDetailService;
-	        this.jwtUtil = jwtUtil;
-	    }
+
 	
 	private Set<String> paths = Set.of("/auth/*","/login","/signup","/sendotp","/categories","/categories/*/courses","/course/courses/size","/chat/**","/app/**","/topic/**");
 

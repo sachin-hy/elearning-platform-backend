@@ -12,13 +12,4 @@ import com.example.project.entity.Section;
 @Repository
 public interface SectionRepository extends JpaRepository<Section,Long> {
 
-	@Modifying
-	
-	@Query("UPDATE Section s SET s.sectionName = :sectionName WHERE s.id = :sectionid")
-	Section updateSectionNameById(@Param("sectionid") Long sectionid, @Param("sectionName") String sectionName);
-
-
-
-	
-
 }

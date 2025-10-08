@@ -1,6 +1,9 @@
 package com.example.project.controller;
 
 import java.security.Principal;
+
+import com.example.project.service.Interface.ChangePasswordServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,15 +17,12 @@ import jakarta.validation.Valid;
 
 @RestController
 public class ChangePasswordController {
-	
-	private final ChangePasswordService changePasswordService;
+
+    @Autowired
+	private ChangePasswordServiceInterface changePasswordService;
 
 	
-	
-	public ChangePasswordController(ChangePasswordService changePasswordService)
-	{
-		this.changePasswordService=changePasswordService;
-	}
+
 	
 	
 	

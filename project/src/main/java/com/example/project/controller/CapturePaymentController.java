@@ -4,6 +4,7 @@ import com.example.project.dto.OrderResponse;
 import com.example.project.dto.PaymentVerificationRequest;
 import com.example.project.dto.PaymentVerificationResponse;
 
+import com.example.project.service.Interface.PaymentServiceInterface;
 import com.example.project.service.PaymentService;
 
 import jakarta.validation.Valid;
@@ -23,17 +24,13 @@ import java.security.Principal;
 @Slf4j 
 public class CapturePaymentController {
 
-   
-   
-  
-    private final PaymentService paymentService;
+
+
+    @Autowired
+    private PaymentServiceInterface paymentService;
     
     
-    public CapturePaymentController(PaymentService paymentService)
-    {
-    	this.paymentService = paymentService;
-    }
-    
+
     
   
     @PostMapping("/create-order")

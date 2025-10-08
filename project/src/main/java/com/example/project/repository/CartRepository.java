@@ -14,12 +14,7 @@ import com.example.project.entity.Users;
 @Repository
 public interface CartRepository extends JpaRepository<Cart,Long>{
 
-   
-
-List<Cart> findByUser(Users user);
-
-Page<Cart> findByUser(Users user, Pageable pageable);
-
+    Page<Cart> findByUser(Users user, Pageable pageable);
 
 	Cart findByUserAndCartCourse( Users user,  Courses course);
 
