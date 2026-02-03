@@ -10,7 +10,8 @@ COPY src ./src
 RUN mvn clean install -DskipTests
 
 # Stage 2: Create the final, lightweight image
-FROM FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
+
 
 # This is a much smaller image for running the app
 
