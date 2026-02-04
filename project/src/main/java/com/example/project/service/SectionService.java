@@ -55,11 +55,12 @@ public class SectionService implements SectionServiceInterface {
 		
 		course.addSection(section);
 
-        courseService.save(course);
+       Section sec = sectionRepo.save(section);
+       // courseService.save(course);
 		log.info("Section '{}' saved successfully for course ID: {}", sectionDto.sectionName(), cid);
         
-	
-		return new SectionResponseDto(section);
+
+		return new SectionResponseDto(sec);
 		
 	}
 
