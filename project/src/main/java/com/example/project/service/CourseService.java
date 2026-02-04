@@ -269,4 +269,11 @@ public class CourseService implements CourseServiceInterface {
         return pa.map(course -> new CourseResponseDto(course)).getContent();
     }
 
+    @Override
+    public CourseResponseDto getCourseById(Long cid) {
+        Courses courses =  courseRepo.findById(cid).get();
+
+        return new CourseResponseDto(courses);
+    }
+
 }

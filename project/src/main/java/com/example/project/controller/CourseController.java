@@ -12,13 +12,7 @@ import com.example.project.service.Interface.UsersServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import com.example.project.dto.CourseDto;
@@ -117,6 +111,15 @@ public class CourseController {
 		
 		
 	}
+
+    @GetMapping("/{courseid}")
+    public ResponseEntity<?> getCourseById(@PathVariable("courseid") String courseid)
+    {
+        Long cid = Long.parseLong(courseid);
+
+        CourseResponseDto res = courseService.getCourseById(cid);
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
 	
 	@DeleteMapping("/delete-course")
 	public ResponseEntity<?> deleteCourse(@RequestParam("courseid") String cid)

@@ -18,4 +18,6 @@ public interface CourseServiceInterface {
     public Courses findById(Long id);
     public void save(Courses course);
     public List<CourseResponseDto> findAllCourses(String page);
+
+    CourseResponseDto getCourseById(Long cid);
 }
