@@ -120,6 +120,15 @@ public class CourseController {
         CourseResponseDto res = courseService.getCourseById(cid);
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
+
+    @GetMapping("/d/{courseid}")
+    public ResponseEntity<?> getCourseByCourseId(@PathVariable("courseid") String courseid)
+    {
+        Long cid = Long.parseLong(courseid);
+        CourseResponseDto res = courseService.getCourseById(cid);
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
+
 	
 	@DeleteMapping("/delete-course")
 	public ResponseEntity<?> deleteCourse(@RequestParam("courseid") String cid)

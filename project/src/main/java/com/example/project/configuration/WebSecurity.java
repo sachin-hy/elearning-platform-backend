@@ -36,7 +36,7 @@ public class WebSecurity {
 	private JwtFilter jwtFilter;
 	
 	
-	String[] freePaths = {"/auth/*","/categories/*/courses","/categories","/course/courses/size","/chat/**","/app/**","/topic/**"};
+	String[] freePaths = {"/auth/*","/categories/*/courses","/categories","/course/courses/size","/chat/**","/app/**","/topic/**","/course/d/*"};
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
 	{
@@ -81,7 +81,9 @@ public class WebSecurity {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("https://elearning-platform-frontend-rho.vercel.app","http://localhost:3000")); ///http://localhost:3000
+        config.setAllowedOrigins(Arrays.asList("https://elearning-platform-frontend-rho.vercel.app",
+                                                "http://localhost:3000",
+                                                "https://elearning-platform-frontend-8o0m.onrender.com")); ///http://localhost:3000
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         config.setAllowCredentials(true);
         config.setAllowedHeaders(Arrays.asList("*"));

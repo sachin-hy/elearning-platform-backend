@@ -34,7 +34,7 @@ public class JwtFilter extends OncePerRequestFilter{
 
 
 	
-	private Set<String> paths = Set.of("/auth/*","/login","/signup","/sendotp","/categories","/categories/*/courses","/course/courses/size","/chat/**","/app/**","/topic/**");
+	private Set<String> paths = Set.of("/auth/*","/login","/signup","/sendotp","/categories","/categories/*/courses","/course/courses/size","/chat/**","/app/**","/topic/**","/course/d/*");
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
