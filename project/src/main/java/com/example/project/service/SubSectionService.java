@@ -6,6 +6,7 @@ import com.example.project.service.Interface.SectionServiceInterface;
 import com.example.project.service.Interface.SubSectionServiceInterface;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,7 @@ public class SubSectionService implements SubSectionServiceInterface {
 
 
 	@Transactional
+    @CacheEvict(value = {"coursesByCategory","allCourses","courseInstructor","courseInstructor"}, allEntries = true, beforeInvocation = false)
 	public SubSectionResponseDto saveSubSection(SubSectionDto sectionDto) {
 		log.info("Attempting to save a new sub-section with title: {}", sectionDto.title());
 
@@ -112,6 +114,7 @@ public class SubSectionService implements SubSectionServiceInterface {
 
 
 	@Transactional
+    @CacheEvict(value = {"coursesByCategory","allCourses","courseInstructor","courseInstructor"}, allEntries = true, beforeInvocation = false)
 	public SubSectionResponseDto findByIdAndUpdate(SubSectionDto subsectionDto) {
 		log.info("Attempting to update sub-section with ID: {}", subsectionDto.subsectionid());
 
@@ -160,6 +163,7 @@ public class SubSectionService implements SubSectionServiceInterface {
 
 
 	@Transactional
+    @CacheEvict(value = {"coursesByCategory","allCourses","courseInstructor","courseInstructor"}, allEntries = true, beforeInvocation = false)
 	public void deleteById(String id) {
 		log.info("Attempting to delete sub-section with ID: {}", id);
 

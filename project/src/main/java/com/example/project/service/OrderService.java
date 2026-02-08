@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.example.project.service.Interface.OrderServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import com.example.project.dto.CourseResponseDto;
@@ -46,6 +47,7 @@ public class OrderService implements OrderServiceInterface {
 
 
 	@Transactional
+    @CacheEvict(value = "courseStudent", allEntries = true,beforeInvocation = false)
 	public List<CourseResponseDto> saveOrderSuccess(Orders newOrder, String razorpayOrderId) {
 		// TODO Auto-generated method stub
 		

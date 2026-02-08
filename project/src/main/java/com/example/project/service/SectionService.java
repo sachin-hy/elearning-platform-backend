@@ -4,6 +4,8 @@ package com.example.project.service;
 import com.example.project.service.Interface.CourseServiceInterface;
 import com.example.project.service.Interface.SectionServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,7 @@ public class SectionService implements SectionServiceInterface {
 	
 	
 	@Transactional
+    @CacheEvict(value = {"coursesByCategory","allCourses","courseInstructor","courseInstructor"}, allEntries = true, beforeInvocation = false)
 	public SectionResponseDto saveSection(SectionDto sectionDto) {
 		// TODO Auto-generated method stub
 		 log.info("Attempting to save a new section: {} for course ID: {}", sectionDto.sectionName(), sectionDto.courseid());
@@ -66,6 +69,7 @@ public class SectionService implements SectionServiceInterface {
 
 	
 		@Transactional
+        @CacheEvict(value = {"coursesByCategory","allCourses","courseInstructor","courseInstructor"}, allEntries = true, beforeInvocation = false)
 	public void deleteByid(String sectionid) {
 		// TODO Auto-generated method stub
 		

@@ -8,6 +8,7 @@ import com.example.project.service.CourseService;
 import com.example.project.service.Interface.CategoryServiceInterface;
 import com.example.project.service.Interface.CourseServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -81,6 +82,7 @@ public class CategoryController {
 	}
 	
 	@GetMapping("/{type}/courses")
+
 	public ResponseEntity<?> getCourseByCategory(@PathVariable String type,@RequestParam("page")  String page)  {
 
 

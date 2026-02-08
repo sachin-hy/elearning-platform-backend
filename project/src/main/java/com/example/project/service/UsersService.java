@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.example.project.exception.ResourceNotFoundException;
 import com.example.project.service.Interface.UsersServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -91,6 +92,7 @@ public class UsersService implements UsersServiceInterface {
 
 
 	@Transactional
+    @Cacheable(value = "courseStudent" , key = "#email")
 	public List<CourseResponseDto> findCoursesEnrolled(String email) {
 		// TODO Auto-generated method stub
 		  log.info("Finding enrolled courses for user: {}", email);

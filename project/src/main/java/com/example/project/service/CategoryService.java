@@ -7,6 +7,7 @@ import com.example.project.exception.ResourceNotFoundException;
 import com.example.project.service.Interface.CategoryServiceInterface;
 import com.example.project.service.Interface.CourseServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class CategoryService implements CategoryServiceInterface {
 	
 
 	@Transactional
+    @Cacheable(value = "categoryCache", key = "'all_categories'")
 	public List<Category> getAllCategory() {
 		 log.info("Fetching all categories.");
 	       
@@ -65,6 +67,7 @@ public class CategoryService implements CategoryServiceInterface {
 
 
     @Transactional
+    @Cacheable(value = "coursesByCategory", key = "#type + '-' + #page")
 	public   List<CourseResponseDto> getByCategory(String type, String page) {
 
         log.info("Fetching courses for category '{}' on page '{}'", type, page);

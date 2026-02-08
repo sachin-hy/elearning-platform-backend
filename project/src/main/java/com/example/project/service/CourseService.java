@@ -14,6 +14,8 @@ import com.example.project.service.Interface.UsersServiceInterface;
 import org.apache.tika.Tika;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -59,6 +61,7 @@ public class CourseService implements CourseServiceInterface {
     
 	
 	@Transactional
+    @CacheEvict(value = {"courseInstructor", "allCourses","coursesByCategory"}, allEntries = true)
 	public CourseResponseDto saveCourse(CourseDto courseDto, String email) throws IOException {
 		
 		log.info("Attempting to save new course: {} for user: {}", courseDto.courseName(), email);
@@ -146,6 +149,7 @@ public class CourseService implements CourseServiceInterface {
 
 
 	@Transactional
+    @CacheEvict(value = {"courseInstructor", "allCourses","coursesByCategory","courseStudent"}, allEntries = true)
 	public void deleteByid(String cid) {
 		
 		 log.info("Attempting to delete course with ID: {}", cid);
@@ -196,6 +200,7 @@ public class CourseService implements CourseServiceInterface {
 
  
 	@Transactional
+    @Cacheable(value = "courseInstructor" , key="#email")
 	public List<CourseResponseDto> findByInstructor(String email) {
 		
 		log.info("Fetching courses for instructor with email: {}", email);
@@ -251,6 +256,7 @@ public class CourseService implements CourseServiceInterface {
     }
 
     @Override
+    @Cacheable(value = "allCourses", key = "#page")
     public List<CourseResponseDto> findAllCourses(String page) {
         int p = 0;
 
