@@ -1,6 +1,13 @@
 version: "3.8"
 
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: project_redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
   springboot:
     build: .
     container_name: project_backend
@@ -20,5 +27,6 @@ services:
       - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
       - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-    
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     
